@@ -15,16 +15,22 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowAll",
-        builder => builder
-            .AllowAnyOrigin() 
-            .AllowAnyMethod()
-            .AllowAnyHeader());
+    options.AddPolicy("AllowFrontend", policy =>
+    {
+        policy.WithOrigins("http://localhost:5173") // 👈 Your React app origin
+              .AllowAnyHeader()
+              .AllowAnyMethod()
+              .AllowCredentials(); // 👈 Required for withCredentials
+    });
 });
 builder.WebHost.UseUrls("http://+:8001");
 builder.Services.AddControllers(options =>
 {
     options.Filters.Add<ValidateModelFilter>();
+
+}).AddJsonOptions(options =>
+{
+    options.JsonSerializerOptions.PropertyNamingPolicy = null;
 });
 builder.Services.Configure<ApiBehaviorOptions>(options =>
 {
@@ -55,6 +61,7 @@ builder.Services.AddScoped<IUserService, UserService>();
 
 
 var app = builder.Build();
+app.UseCors("AllowFrontend");
 app.UseMiddleware<UnHandledExceptionMiddleware>();
 app.UseRouting();
 app.UseEndpoints(endpoints =>
@@ -67,5 +74,4 @@ app.UseSwaggerUI(c =>
     c.SwaggerEndpoint("/swagger/v1/swagger.json", "API v1");
     c.RoutePrefix = string.Empty;
 });
-app.UseCors("AllowAll");
 app.Run();
