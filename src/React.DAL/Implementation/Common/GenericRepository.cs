@@ -18,9 +18,14 @@ namespace React.DAL.Implementation.Common
             _dbSet = context.Set<T>();
         }
 
-        public async Task<APIBaseResponse<IEnumerable<T>>> GetAllAsync()
+        public async Task<APIBaseResponse<IEnumerable<T>>> GetAllAsync(FilterDto? filterDto = null)
         {
-            var data = await _dbSet.ToListAsync();
+            IQueryable<T> query = _dbSet;
+
+            // Apply filters if any
+            query = QueryBuilder.ApplyFilters(query, filterDto);
+
+            var data = await query.ToListAsync();
             return new APIBaseResponse<IEnumerable<T>>
             {
                 Data = data,
@@ -28,9 +33,14 @@ namespace React.DAL.Implementation.Common
             };
         }
 
-        public async Task<APIBaseResponse<T>> GetByIdAsync(object id)
+
+        public async Task<APIBaseResponse<T>> GetByIdAsync(FilterDto? filterDto = null)
         {
-            var entity = await _dbSet.FindAsync(id);
+            IQueryable<T> query = _dbSet;
+
+            query = QueryBuilder.ApplyFilters(query, filterDto);
+
+            var entity = await query.FirstOrDefaultAsync(); // Note: this will just return first match
             if (entity == null)
             {
                 return new APIBaseResponse<T>

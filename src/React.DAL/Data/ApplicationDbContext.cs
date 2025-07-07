@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using React.Domain.User;
+using React.Domain.Models.User;
 using System;
 using System.Collections.Generic;
 using System.Linq;

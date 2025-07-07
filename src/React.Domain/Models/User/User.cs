@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace React.Domain.User
+namespace React.Domain.Models.User
 {
     public class User
     {
