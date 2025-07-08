@@ -69,7 +69,7 @@ namespace React.DAL.Implementation.User
             filter.AddPredicateIfNotNull(nameof(Domain.Models.User.User.Password), password);
             APIBaseResponse<Domain.Models.User.User> user = await _userRepository.GetByIdAsync(filter);
 
-            if (user == null || string.IsNullOrEmpty(email) || string.IsNullOrEmpty(password))
+            if (user.ResponseCode != ResponseCodes.SUCCESS || string.IsNullOrEmpty(email) || string.IsNullOrEmpty(password))
             {
                 return new APIBaseResponse<LoginResponseDto>
                 {
@@ -78,7 +78,8 @@ namespace React.DAL.Implementation.User
                 };
             }
 
-            var token = _jwtTokenGenerator.GenerateToken(user.Data);
+            //var token = _jwtTokenGenerator.GenerateToken(user.Data);
+            var token = "";
 
             return new APIBaseResponse<LoginResponseDto>
             {
@@ -86,7 +87,8 @@ namespace React.DAL.Implementation.User
                 {
                     Token = token,
                     Email = user.Data.Email,
-                    Name = user.Data.Name
+                    Name = user.Data.Name,
+                    User = user.Data
                 },
                 ResponseCode = ResponseCodes.SUCCESS
             };

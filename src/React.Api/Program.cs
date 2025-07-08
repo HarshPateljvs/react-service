@@ -4,9 +4,11 @@ using Microsoft.IdentityModel.Tokens;
 using React.Api.Filter;
 using React.Api.Middleware;
 using React.DAL.Data;
+using React.DAL.Implementation.AppUser;
 using React.DAL.Implementation.Common;
 using React.DAL.Implementation.Jwt;
 using React.DAL.Implementation.User;
+using React.DAL.Interface.AppUser;
 using React.DAL.Interface.Common;
 using React.DAL.Interface.User;
 using React.Domain.Common;
@@ -61,6 +63,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 // Repositories and Services
 builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IAppUserService, AppUserService>();
 builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JwtSettings"));
 builder.Services.AddSingleton<JwtTokenGenerator>();
 builder.Services.AddAuthentication("Bearer")
@@ -88,6 +91,8 @@ var app = builder.Build();
 app.UseCors("AllowFrontend");
 app.UseMiddleware<UnHandledExceptionMiddleware>();
 app.UseRouting();
+app.UseAuthentication();   
+app.UseAuthorization(); 
 app.UseEndpoints(endpoints =>
 {
     endpoints.MapControllers();
@@ -98,6 +103,5 @@ app.UseSwaggerUI(c =>
     c.SwaggerEndpoint("/swagger/v1/swagger.json", "API v1");
     c.RoutePrefix = string.Empty;
 });
-app.UseAuthentication();
-app.UseAuthorization();
+
 app.Run();

@@ -1,7 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace React.Domain.Models.User
 {
+    [Table("Users")]
     public class User
     {
         [Key]

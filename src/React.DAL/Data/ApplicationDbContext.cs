@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using React.Domain.Models.AppUser;
 using React.Domain.Models.User;
 using System;
 using System.Collections.Generic;
@@ -14,5 +15,6 @@ namespace React.DAL.Data
             : base(options) { }
 
         public DbSet<User> Users { get; set; }
+        public DbSet<AppUser> AppUser { get; set; }
     }
 }   

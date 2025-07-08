@@ -1,12 +1,14 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using React.Api.Filter;
-using React.DAL.Interface.User;
+using React.DAL.Interface.User  ;
 using React.Domain.Common;
 using React.Domain.Models.User;
 using System.Threading.Tasks;
 
 namespace React.Api.Controllers
 {
+    [Authorize]
     [ApiController] 
     [Route("api/[controller]")]
     public class UserController : ControllerBase
@@ -18,10 +20,9 @@ namespace React.Api.Controllers
             _userService = userService;
         }
 
-        [HttpGet]
-        public async Task<IActionResult> GetAllUsers()
+        [HttpPost("GetAllUsers")]
+        public async Task<IActionResult> GetAllUsers(FilterDto? dto)
         {
-            FilterDto? dto = new FilterDto();
             var result = await _userService.GetAllUsersAsync(dto);
             return Ok(result);
         }
@@ -39,7 +40,7 @@ namespace React.Api.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateUser([FromBody] User user)
         {
-            var result = await _userService.AddUserAsync(user);
+            var result = await _userService.AddUserAsync(user); 
             return Ok(result);
         }
 
@@ -48,7 +49,7 @@ namespace React.Api.Controllers
         {
             var result = await _userService.UpdateUserAsync(user);
             return Ok(result);
-        }
+        }   
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteUser(int id)
