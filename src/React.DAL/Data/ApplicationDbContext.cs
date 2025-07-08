@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using React.Domain.Models.AppUser;
+using React.Domain.Models.Employee;
 using React.Domain.Models.User;
 using System;
 using System.Collections.Generic;
@@ -16,5 +17,6 @@ namespace React.DAL.Data
 
         public DbSet<User> Users { get; set; }
         public DbSet<AppUser> AppUser { get; set; }
+        public DbSet<Employee> Employees { get; set; }
     }
 }   

@@ -1,0 +1,64 @@
+﻿I am building a .NET Core Web API project that uses a layered architecture. Here’s my tech stack and structure:
+
+- **Database**: SQL Server
+- **ORM**: Entity Framework Core
+- **Architecture**:
+  - Model
+  - DbContext
+  - Repository (Generic: `IGenericRepository<T>`)
+  - Service layer (`I[Entity]Service`)
+  - Controller (API layer)
+- **API Pattern**:
+  - Uses DTOs (`FilterDto`, `APIBaseResponse<T>`)
+  - Passwords are encrypted using utility methods
+  - Role-based login and JWT
+  - Endpoint naming: `api/[controller]`
+  - Example controller already exists: `UserController`
+- **Entities already implemented**: `User`, `AppUser`
+- **Helpers**: JWT token generator, password encryption utility
+
+---
+
+### I want to create a new API module named: `{EntityName}` (e.g., `Employee`)
+
+Please generate the **complete API flow** as per my current system:
+
+---
+
+### 🔧 Step 1: Model
+- Name: `Domain.Models.{Module}.{Entity}`
+- Table name: `{Entity}`
+- Fields: `Id`, `Name`, `Email`, `Department`, `Role`, `CreatedAt`
+
+### 🗂 Step 2: Add to `ApplicationDbContext`
+- Add `DbSet<{Entity}> {EntityPlural} { get; set; }`
+
+### 🔁 Step 3: Repository
+- Use existing `IGenericRepository<T>` and `GenericRepository<T>`
+
+### 🧠 Step 4: Service Layer
+- Interface: `I{Entity}Service`
+- Implementation: `{Entity}Service`
+- CRUD methods using `FilterDto`
+
+### 🧪 Step 5: Utility
+- Add encryption/decryption if needed for fields (like password)
+
+### 🧱 Step 6: Controller
+- Name: `{Entity}Controller`
+- Path: `api/{Entity}`
+- Endpoints:
+  - `POST /api/{entity}/GetAll{EntityPlural}`
+  - `GET /api/{entity}/{id}`
+  - `POST /api/{entity}`
+  - `PUT /api/{entity}`
+  - `DELETE /api/{entity}/{id}`
+
+---
+
+Please also:
+- Follow best practices
+- Use async/await properly
+- Add input validation via `[Required]` in the model
+- Use JWT and `Authorize` attribute as needed
+- Return `APIBaseResponse<T>` format in service
