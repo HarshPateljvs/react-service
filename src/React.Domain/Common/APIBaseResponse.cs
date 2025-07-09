@@ -18,5 +18,25 @@ namespace React.Domain.Common
         public APIBaseResponse()
         {
         }
+        public void AddInfo(string message)
+        {
+            InfoMessage.Add(message);
+        }
+
+        public void AddError(string message)
+        {
+            ErrorMessage.Add(message);
+        }
+
+        public void AddWarning(string message)
+        {
+            WarningMessage.Add(message);
+        }
+
+        public void AddValidation(string message)
+        {
+            ValidationMessage.Add(message);
+        }
+
     }
 }

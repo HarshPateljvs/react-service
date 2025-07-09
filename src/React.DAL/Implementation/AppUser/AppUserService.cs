@@ -24,8 +24,15 @@ namespace React.DAL.Implementation.AppUser
 
         public async Task<APIBaseResponse<React.Domain.Models.AppUser.AppUser>> AddAppUserAsync(React.Domain.Models.AppUser.AppUser user)
         {
-            return await _appUserRepository.AddAsync(user);
+            var response = await _appUserRepository.AddAsync(user);
+
+            if (response.ResponseCode == ResponseCodes.CREATED)
+            {
+                response.AddInfo("User created successfully.");
+            }
+            return response;
         }
+
         public async Task<APIBaseResponse<LoginResponseDto>> LoginAsync(string email, string password)
         {
 
@@ -55,7 +62,8 @@ namespace React.DAL.Implementation.AppUser
                     Email = userResponse.Data.Email,
                     Name = userResponse.Data.FirstName + " " + userResponse.Data.LastName,
                     AppUser = userResponse.Data
-                }
+                },
+                InfoMessage = new List<string> { "Login Succesfully." }
             };
         }
 
