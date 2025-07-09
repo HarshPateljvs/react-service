@@ -1,7 +1,8 @@
-﻿using React.DAL.Interface.Employee;
+﻿using React.DAL.Interface.Common;
+using React.DAL.Interface.Employee;
 using React.Domain.Common;
 using React.Domain.Models.Employee;
-using React.DAL.Interface.Common;
+using React.Domain.Models.User;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -28,7 +29,13 @@ namespace React.DAL.Implementation.Employee
 
         public async Task<APIBaseResponse<React.Domain.Models.Employee.Employee>> AddEmployeeAsync(React.Domain.Models.Employee.Employee employee)
         {
-            return await _employeeRepo.AddAsync(employee);
+            var response = await _employeeRepo.AddAsync(employee);
+
+            if (response.ResponseCode == ResponseCodes.CREATED)
+            {
+                response.AddInfo("Employee created successfully.");
+            }
+            return response;
         }
 
         public async Task<APIBaseResponse<React.Domain.Models.Employee.Employee>> UpdateEmployeeAsync(React.Domain.Models.Employee.Employee employee)

@@ -27,7 +27,7 @@ namespace React.Api.Controllers
             return Ok(result);
         }
 
-        [AllowAnonymous]
+        [AllowAnonymous]    
         [HttpPost("Login")]
         public async Task<IActionResult> Login([FromBody] LoginRequest request)
         {
