@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace React.Domain.Models.AppUser
 {
@@ -30,5 +31,10 @@ namespace React.Domain.Models.AppUser
         [Required(ErrorMessage = "Password is required")]
         [StringLength(100, ErrorMessage = "Password must be between 6 and 100 characters", MinimumLength = 6)]
         public string Password { get; set; } = "";
+
+        public int? RoleId { get; set; }
+        [ForeignKey(nameof(RoleId))]
+        [JsonIgnore ]
+        public virtual React.Domain.Models.UserRole.UserRole UserRole { get; set; } // Navigation property
     }
 }

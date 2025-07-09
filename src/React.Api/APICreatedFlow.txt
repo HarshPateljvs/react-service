@@ -1,21 +1,23 @@
 ﻿I am building a .NET Core Web API project that uses a layered architecture. Here’s my tech stack and structure:
 
-- **Database**: SQL Server
-- **ORM**: Entity Framework Core
+- **Database**: SQL Server  
+- **ORM**: Entity Framework Core  
 - **Architecture**:
-  - Model
-  - DbContext
-  - Repository (Generic: `IGenericRepository<T>`)
-  - Service layer (`I[Entity]Service`)
-  - Controller (API layer)
+  - Model  
+  - DbContext  
+  - Repository (Generic: `IGenericRepository<T>`)  
+  - Service layer (`I[Entity]Service`)  
+  - Controller (API layer)  
+
 - **API Pattern**:
-  - Uses DTOs (`FilterDto`, `APIBaseResponse<T>`)
-  - Passwords are encrypted using utility methods
-  - Role-based login and JWT
-  - Endpoint naming: `api/[controller]`
-  - Example controller already exists: `UserController`
-- **Entities already implemented**: `User`, `AppUser`
-- **Helpers**: JWT token generator, password encryption utility
+  - Uses DTOs (`FilterDto`, `APIBaseResponse<T>`)  
+  - Passwords are encrypted using utility methods  
+  - Role-based login and JWT  
+  - Endpoint naming: `api/[controller]`  
+  - Example controller already exists: `UserController`  
+
+- **Entities already implemented**: `User`, `AppUser`  
+- **Helpers**: JWT token generator, password encryption utility  
 
 ---
 
@@ -26,39 +28,166 @@ Please generate the **complete API flow** as per my current system:
 ---
 
 ### 🔧 Step 1: Model
-- Name: `Domain.Models.{Module}.{Entity}`
+- Location: `Domain.Models.{Module}.{Entity}`
 - Table name: `{Entity}`
-- Fields: `Id`, `Name`, `Email`, `Department`, `Role`, `CreatedAt`
-
-### 🗂 Step 2: Add to `ApplicationDbContext`
-- Add `DbSet<{Entity}> {EntityPlural} { get; set; }`
-
-### 🔁 Step 3: Repository
-- Use existing `IGenericRepository<T>` and `GenericRepository<T>`
-
-### 🧠 Step 4: Service Layer
-- Interface: `I{Entity}Service`
-- Implementation: `{Entity}Service`
-- CRUD methods using `FilterDto`
-
-### 🧪 Step 5: Utility
-- Add encryption/decryption if needed for fields (like password)
-
-### 🧱 Step 6: Controller
-- Name: `{Entity}Controller`
-- Path: `api/{Entity}`
-- Endpoints:
-  - `POST /api/{entity}/GetAll{EntityPlural}`
-  - `GET /api/{entity}/{id}`
-  - `POST /api/{entity}`
-  - `PUT /api/{entity}`
-  - `DELETE /api/{entity}/{id}`
+- Fields:  
+  - `Id`  
+  - `Name`  
+  - `Email`  
+  - `Department`  
+  - `Role`  
+  - `CreatedAt`
 
 ---
 
-Please also:
-- Follow best practices
-- Use async/await properly
-- Add input validation via `[Required]` in the model
-- Use JWT and `Authorize` attribute as needed
-- Return `APIBaseResponse<T>` format in service
+### 🗂 Step 2: Add to ApplicationDbContext
+```csharp
+public DbSet<Employee> Employees { get; set; }
+```
+
+---
+
+### 🔁 Step 3: Repository
+- Use existing: `IGenericRepository<T>` and `GenericRepository<T>`
+
+---
+
+### 🧠 Step 4: Service Layer
+
+#### Interface: `IEmployeeService.cs`
+```csharp
+public interface IEmployeeService
+{
+    Task<APIBaseResponse<IEnumerable<Employee>>> GetAllEmployeesAsync(FilterDto? filter);
+    Task<APIBaseResponse<Employee>> GetEmployeeByIdAsync(FilterDto? filter);
+    Task<APIBaseResponse<Employee>> AddEmployeeAsync(Employee employee);
+    Task<APIBaseResponse<Employee>> UpdateEmployeeAsync(Employee employee);
+    Task<APIBaseResponse<Employee>> DeleteEmployeeAsync(FilterDto? filter);
+}
+```
+
+#### Implementation: `EmployeeService.cs`
+```csharp
+public class EmployeeService : IEmployeeService
+{
+    private readonly IGenericRepository<Employee> _employeeRepo;
+
+    public EmployeeService(IGenericRepository<Employee> employeeRepo)
+    {
+        _employeeRepo = employeeRepo;
+    }
+
+    public async Task<APIBaseResponse<IEnumerable<Employee>>> GetAllEmployeesAsync(FilterDto? filter)
+    {
+        return await _employeeRepo.GetAllAsync(filter);
+    }
+
+    public async Task<APIBaseResponse<Employee>> GetEmployeeByIdAsync(FilterDto? filter)
+    {
+        return await _employeeRepo.GetByIdAsync(filter);
+    }
+
+    public async Task<APIBaseResponse<Employee>> AddEmployeeAsync(Employee employee)
+    {
+        return await _employeeRepo.AddAsync(employee);
+    }
+
+    public async Task<APIBaseResponse<Employee>> UpdateEmployeeAsync(Employee employee)
+    {
+        return await _employeeRepo.UpdateAsync(employee);
+    }
+
+    public async Task<APIBaseResponse<Employee>> DeleteEmployeeAsync(FilterDto? filter)
+    {
+        var existing = await _employeeRepo.GetByIdAsync(filter);
+        if (existing.Data == null)
+        {
+            return new APIBaseResponse<Employee>
+            {
+                ResponseCode = ResponseCodes.NOT_FOUND,
+                ErrorMessage = new List<string> { "Employee not found" }
+            };
+        }
+
+        return await _employeeRepo.DeleteAsync(existing.Data);
+    }
+}
+```
+
+---
+
+### 🧪 Step 5: Utility
+- If needed, use encryption/decryption for sensitive fields like `Password` in the `Employee` model.
+
+---
+
+### 🧱 Step 6: Controller
+
+- File: `EmployeeController.cs`
+- Route: `[Route("api/[controller]")]`
+- Decorate with `[Authorize]`
+
+```csharp
+[Authorize]
+[ApiController]
+[Route("api/[controller]")]
+public class EmployeeController : ControllerBase
+{
+    private readonly IEmployeeService _employeeService;
+
+    public EmployeeController(IEmployeeService employeeService)
+    {
+        _employeeService = employeeService;
+    }
+
+    [HttpPost("GetAllEmployees")]
+    public async Task<IActionResult> GetAll([FromBody] FilterDto filter)
+    {
+        var result = await _employeeService.GetAllEmployeesAsync(filter);
+        return Ok(result);
+    }
+
+    [HttpGet("{id}")]
+    public async Task<IActionResult> GetById(int id)
+    {
+        var filter = new FilterDto();
+        filter.Predicates.Add(nameof(Employee.Id), id);
+        var result = await _employeeService.GetEmployeeByIdAsync(filter);
+        return Ok(result);
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> Add(Employee employee)
+    {
+        var result = await _employeeService.AddEmployeeAsync(employee);
+        return Ok(result);
+    }
+
+    [HttpPut]
+    public async Task<IActionResult> Update(Employee employee)
+    {
+        var result = await _employeeService.UpdateEmployeeAsync(employee);
+        return Ok(result);
+    }
+
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> Delete(int id)
+    {
+        var filter = new FilterDto();
+        filter.Predicates.Add(nameof(Employee.Id), id);
+        var result = await _employeeService.DeleteEmployeeAsync(filter);
+        return Ok(result);
+    }
+}
+```
+
+---
+
+### ✅ Best Practices
+- Use `async/await` in all service/controller methods  
+- Always return `APIBaseResponse<T>` format  
+- Apply `[Required]` on all DTO model properties  
+- Use `[Authorize]` on protected controllers  
+- Separate encrypted logic in `EncryptionHelper` class  
+
+---

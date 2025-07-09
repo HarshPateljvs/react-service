@@ -2,6 +2,7 @@
 using React.Domain.Models.AppUser;
 using React.Domain.Models.Employee;
 using React.Domain.Models.User;
+using React.Domain.Models.UserRole;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,5 +19,6 @@ namespace React.DAL.Data
         public DbSet<User> Users { get; set; }
         public DbSet<AppUser> AppUser { get; set; }
         public DbSet<Employee> Employees { get; set; }
+        public DbSet<UserRole> UserRoles { get; set; }
     }
 }   
