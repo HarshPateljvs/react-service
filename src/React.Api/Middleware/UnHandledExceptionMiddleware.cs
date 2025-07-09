@@ -1,6 +1,8 @@
 ﻿using Newtonsoft.Json;
 using React.Domain.Common;
+using System.Diagnostics;
 using System.Net;
+using System.Text;
 using System.Xml;
 
 namespace React.Api.Middleware
@@ -14,55 +16,48 @@ namespace React.Api.Middleware
             _next = next;
         }
 
-        public async Task Invoke(HttpContext context)
+        public async Task Invoke(HttpContext context, React.DAL.Logger.ErrorMgmt logger)
         {
+            var stopwatch = Stopwatch.StartNew();
+            string requestBody = await ReadRequestBodyAsync(context.Request);
+
             try
             {
                 await _next(context);
             }
             catch (Exception ex)
             {
-                await HandleGlobalExceptionAsync(context, ex);
+                stopwatch.Stop();
+                string logFileUrl = await logger.LogExceptionAsync(context, ex, requestBody, "", stopwatch.Elapsed);
+                await HandleGlobalExceptionAsync(context, ex, logFileUrl);
             }
         }
 
-        private static Task HandleGlobalExceptionAsync(HttpContext context, Exception exception)
+        private async Task<string> ReadRequestBodyAsync(HttpRequest request)
         {
-            context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+            request.EnableBuffering();
+            request.Body.Position = 0;
+            using var reader = new StreamReader(request.Body, Encoding.UTF8, leaveOpen: true);
+            var body = await reader.ReadToEndAsync();
+            request.Body.Position = 0;
+            return body;
+        }
+
+        private static Task HandleGlobalExceptionAsync(HttpContext context, Exception exception, string logFileUrl)
+        {
+            context.Response.StatusCode = 500;
             context.Response.ContentType = "application/json";
-
-            var errorMessages = new List<string>();
-            string errorDetails = $@"
-StatusCode: 500
-ExceptionType: {exception.GetType().FullName}
-Message: {exception.Message}
-StackTrace: {exception.StackTrace}";
-
-            errorMessages.Add(errorDetails);
-
-            // Detect unregistered service error
-            if (exception is InvalidOperationException && exception.Message.Contains("Unable to resolve service for type"))
-            {
-                var lines = exception.Message.Split('\'');
-                if (lines.Length >= 4)
-                {
-                    var missingService = lines[1];
-                    var dependentComponent = lines[3];
-                    errorMessages.Add($"⚠️ Missing Service: `{missingService}` is not registered in DI.");
-                    errorMessages.Add($"🔍 Required by: `{dependentComponent}`. Check if you added `services.AddScoped<IUserRoleService, UserRoleService>()`.");
-                }
-            }
 
             var response = new APIBaseResponse<object>
             {
                 ResponseCode = ResponseCodes.INTERNAL_SERVER_ERROR,
-                ErrorMessage = errorMessages,
+                ErrorMessage = new List<string> { exception.Message },
+                InfoMessage = new List<string> { $"View Log File: {logFileUrl}" }
             };
 
             var json = JsonConvert.SerializeObject(response, Newtonsoft.Json.Formatting.Indented);
             return context.Response.WriteAsync(json);
         }
-
     }
 
 

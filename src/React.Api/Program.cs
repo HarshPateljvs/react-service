@@ -1,8 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.IdentityModel.Tokens;
 using React.Api.Filter;
 using React.Api.Middleware;
+using React.Api.Utils;
 using React.DAL.Data;
 using React.DAL.Implementation.AppUser;
 using React.DAL.Implementation.Common;
@@ -15,6 +17,7 @@ using React.DAL.Interface.Common;
 using React.DAL.Interface.Employee;
 using React.DAL.Interface.User;
 using React.DAL.Interface.UserRole;
+using React.DAL.Logger;
 using React.Domain.Common;
 using React.Domain.DTOs.Jwt;
 using System.Net;
@@ -68,8 +71,9 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IAppUserService, AppUserService>();
-builder.Services.AddScoped<IEmployeeService, EmployeeService>();
-builder.Services.AddScoped<IUserRoleService, UserRoleService>();
+//builder.Services.AddScoped<IEmployeeService, EmployeeService>();
+//builder.Services.AddScoped<IUserRoleService, UserRoleService>();
+builder.Services.AddScoped<ErrorMgmt>();
 
 builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JwtSettings"));
 builder.Services.AddSingleton<JwtTokenGenerator>();
@@ -135,6 +139,20 @@ builder.Services.AddAuthorization();
 
 
 var app = builder.Build();
+var logPath = React.DAL.Utils.StaticResource.GetRootLogDirectory();
+
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new PhysicalFileProvider(logPath),
+    RequestPath = "/logs",
+    ServeUnknownFileTypes = true
+});
+
+app.UseDirectoryBrowser(new DirectoryBrowserOptions
+{
+    FileProvider = new PhysicalFileProvider(logPath),
+    RequestPath = "/logs"
+});
 app.UseCors("AllowFrontend");
 app.UseMiddleware<UnHandledExceptionMiddleware>();
 app.UseRouting();

@@ -3,6 +3,14 @@ using System.Text;
 
 namespace React.Api.Utils
 {
+    public static class Utility
+    {
+        private static string GetBaseUrl(HttpContext context)
+        {
+            var request = context.Request;
+            return $"{request.Scheme}://{request.Host}";
+        }
+    }
     public static class Crypto
     {
         // Recommended to store these securely (e.g., appsettings.json, Azure KeyVault, etc.)

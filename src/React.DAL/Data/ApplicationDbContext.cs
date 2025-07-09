@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using React.Domain.Models.AppUser;
 using React.Domain.Models.Employee;
+using React.Domain.Models.mstError;
 using React.Domain.Models.User;
 using React.Domain.Models.UserRole;
 using System;
@@ -20,5 +21,6 @@ namespace React.DAL.Data
         public DbSet<AppUser> AppUser { get; set; }
         public DbSet<Employee> Employees { get; set; }
         public DbSet<UserRole> UserRoles { get; set; }
+        public DbSet<ExceptionLog> mstErrorLog { get; set; }
     }
 }   
