@@ -23,11 +23,12 @@ namespace React.DAL.Implementation.Common
             IQueryable<T> query = _dbSet;
 
             // Apply filters if any
+            var totalCount = await query.CountAsync();
             query = QueryBuilder.ApplyFilters(query, filterDto);
-
             var data = await query.ToListAsync();
             return new APIBaseResponse<IEnumerable<T>>
             {
+                TotalCount = totalCount,
                 Data = data,
                 ResponseCode = ResponseCodes.SUCCESS
             };

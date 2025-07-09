@@ -10,7 +10,7 @@ namespace React.DAL.Implementation.Common
     {
         public static IQueryable<T> ApplyFilters<T>(IQueryable<T> query, FilterDto? filterDto)
         {
-            if (filterDto == null || filterDto.Predicates == null || !filterDto.Predicates.Any())
+            if (filterDto == null)
                 return query;
 
             var parameter = Expression.Parameter(typeof(T), "x");
@@ -27,7 +27,11 @@ namespace React.DAL.Implementation.Common
 
                 query = query.Where(lambda);
             }
-
+            if (filterDto.PageNo > 0 && filterDto.PageSize > 0)
+            {
+                int skip = (filterDto.PageNo - 1) * filterDto.PageSize;
+                query = query.Skip(skip).Take(filterDto.PageSize);
+            }
             return query;
         }
 

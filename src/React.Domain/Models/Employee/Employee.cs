@@ -27,5 +27,6 @@ namespace React.Domain.Models.Employee
         public string Role { get; set; } = "";
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+
     }
 }
