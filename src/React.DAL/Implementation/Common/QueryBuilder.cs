@@ -27,6 +27,36 @@ namespace React.DAL.Implementation.Common
 
                 query = query.Where(lambda);
             }
+            if (filterDto.SortModels != null && filterDto.SortModels.Any())
+            {
+                bool firstSort = true;
+
+                foreach (var sort in filterDto.SortModels)
+                {
+                    var property = typeof(T).GetProperty(sort.Field);
+                    if (property == null) continue;
+
+                    var sortParam = Expression.Parameter(typeof(T), "x");
+                    var propertyAccess = Expression.MakeMemberAccess(sortParam, property);
+                    var orderByExp = Expression.Lambda(propertyAccess, sortParam);
+
+                    string methodName = sort.Sort.ToLower() == "desc"
+                        ? (firstSort ? "OrderByDescending" : "ThenByDescending")
+                        : (firstSort ? "OrderBy" : "ThenBy");
+
+                    var resultExp = Expression.Call(
+                        typeof(Queryable),
+                        methodName,
+                        new Type[] { typeof(T), property.PropertyType },
+                        query.Expression,
+                        Expression.Quote(orderByExp)
+                    );
+
+                    query = query.Provider.CreateQuery<T>(resultExp);
+                    firstSort = false;
+                }
+            }
+
             if (filterDto.PageNo > 0 && filterDto.PageSize > 0)
             {
                 int skip = (filterDto.PageNo - 1) * filterDto.PageSize;
@@ -46,7 +76,7 @@ namespace React.DAL.Implementation.Common
             if (value is string str && string.IsNullOrWhiteSpace(str))
                 return;
 
-            filter.Predicates.Add(propertyName,value);
+            filter.Predicates.Add(propertyName, value);
         }
     }
 }

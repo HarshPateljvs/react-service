@@ -50,7 +50,7 @@ namespace React.Api.Controllers
             return Ok(result);
         }
 
-        [HttpDelete("{id}")]
+        [HttpDelete("{id}")]    
         public async Task<IActionResult> DeleteEmployee(int id)
         {
             var filter = new FilterDto();

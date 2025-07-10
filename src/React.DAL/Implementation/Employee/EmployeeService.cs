@@ -54,8 +54,12 @@ namespace React.DAL.Implementation.Employee
                     ErrorMessage = new List<string> { "Employee not found" }
                 };
             }
-
-            return await _employeeRepo.DeleteAsync(existing.Data);
+            var response = await _employeeRepo.DeleteAsync(existing.Data);
+            if (response.ResponseCode == ResponseCodes.SUCCESS)
+            {
+                response.AddInfo("Employee Deleted successfully.");
+            }
+            return response;
         }
     }
 }
