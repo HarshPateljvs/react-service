@@ -12,6 +12,7 @@ namespace React.Domain.Common
         public int PageNo { get; set; } = 1;
         public int PageSize { get; set; } = 10;
         public List<SortModel>? SortModels { get; set; } = new List<SortModel>();
+        public string? SearchText { get; set; }
         public FilterDto()
         {
             this.Predicates = new Dictionary<string, object>();

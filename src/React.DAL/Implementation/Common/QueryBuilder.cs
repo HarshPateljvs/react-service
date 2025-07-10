@@ -27,6 +27,85 @@ namespace React.DAL.Implementation.Common
 
                 query = query.Where(lambda);
             }
+            #region Check only in string
+            //if (!string.IsNullOrWhiteSpace(filterDto.SearchText))
+            //{
+            //    var lowerKeyword = filterDto.SearchText.ToLower();
+
+            //    var stringProps = typeof(T)
+            //        .GetProperties()
+            //        .Where(p => p.PropertyType == typeof(string))
+            //        .ToList();
+
+            //    if (stringProps.Any())
+            //    {
+            //        Expression? combined = null;
+
+            //        foreach (var prop in stringProps)
+            //        {
+            //            var propAccess = Expression.Property(parameter, prop);
+            //            var nullCheck = Expression.NotEqual(propAccess, Expression.Constant(null, typeof(string)));
+
+            //            var toLowerCall = Expression.Call(propAccess, typeof(string).GetMethod("ToLower", Type.EmptyTypes)!);
+            //            var containsCall = Expression.Call(
+            //                toLowerCall,
+            //                typeof(string).GetMethod("Contains", new[] { typeof(string) })!,
+            //                Expression.Constant(lowerKeyword)
+            //            );
+
+            //            var notNullAndContains = Expression.AndAlso(nullCheck, containsCall);
+            //            combined = combined == null ? notNullAndContains : Expression.OrElse(combined, notNullAndContains);
+            //        }
+
+            //        if (combined != null)
+            //        {
+            //            var lambda = Expression.Lambda<Func<T, bool>>(combined, parameter);
+            //            query = query.Where(lambda);
+            //        }
+            //    }
+            //} 
+            #endregion
+
+            if (!string.IsNullOrWhiteSpace(filterDto.SearchText))
+            {
+                var keyword = filterDto.SearchText.ToLower();
+                Expression? combined = null;
+
+                foreach (var prop in typeof(T).GetProperties())
+                {
+                    var propertyAccess = Expression.Property(parameter, prop);
+
+                    // property != null
+                    var notNullCheck = prop.PropertyType.IsValueType && Nullable.GetUnderlyingType(prop.PropertyType) == null
+                        ? (Expression?)null // non-nullable value types don't need null check
+                        : Expression.NotEqual(propertyAccess, Expression.Constant(null));
+
+                    // Convert property to string using .ToString()
+                    var toStringCall = Expression.Call(propertyAccess, "ToString", Type.EmptyTypes);
+                    var toLowerCall = Expression.Call(toStringCall, typeof(string).GetMethod("ToLower", Type.EmptyTypes)!);
+
+                    // Contains(keyword)
+                    var containsCall = Expression.Call(
+                        toLowerCall,
+                        typeof(string).GetMethod("Contains", new[] { typeof(string) })!,
+                        Expression.Constant(keyword)
+                    );
+
+                    // Full condition: (prop != null) && prop.ToString().ToLower().Contains(keyword)
+                    Expression condition = notNullCheck != null
+                        ? Expression.AndAlso(notNullCheck, containsCall)
+                        : containsCall;
+
+                    combined = combined == null ? condition : Expression.OrElse(combined, condition);
+                }
+
+                if (combined != null)
+                {
+                    var lambda = Expression.Lambda<Func<T, bool>>(combined, parameter);
+                    query = query.Where(lambda);
+                }
+            }
+
             if (filterDto.SortModels != null && filterDto.SortModels.Any())
             {
                 bool firstSort = true;
