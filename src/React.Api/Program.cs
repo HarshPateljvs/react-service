@@ -7,12 +7,14 @@ using React.Api.Middleware;
 using React.Api.Utils;
 using React.DAL.Data;
 using React.DAL.Implementation.AppUser;
+using React.DAL.Implementation.Chart;
 using React.DAL.Implementation.Common;
 using React.DAL.Implementation.Employee;
 using React.DAL.Implementation.Jwt;
 using React.DAL.Implementation.User;
 using React.DAL.Implementation.UserRole;
 using React.DAL.Interface.AppUser;
+using React.DAL.Interface.Chart;
 using React.DAL.Interface.Common;
 using React.DAL.Interface.Employee;
 using React.DAL.Interface.User;
@@ -73,6 +75,8 @@ builder.Services.AddScoped<IAppUserService, AppUserService>();
 builder.Services.AddScoped<IEmployeeService, EmployeeService>();
 builder.Services.AddScoped<IUserRoleService, UserRoleService>();
 builder.Services.AddScoped<ErrorMgmt>();
+builder.Services.AddScoped<IChartService,ChartService>();
+
 
 builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JwtSettings"));
 builder.Services.AddSingleton<JwtTokenGenerator>();
