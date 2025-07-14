@@ -17,7 +17,10 @@ namespace React.Domain.DTOs.ECharts.Series
     {
         public int? borderRadius { get; set; }
         public string? borderColor { get; set; }
+        public string? shadowColor { get; set; }
         public int? borderWidth { get; set; }
+        public int? shadowBlur { get; set; }
+        public int? shadowOffsetX { get; set; }
     }
     public class LabelOption
     {

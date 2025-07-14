@@ -147,7 +147,7 @@ namespace React.DAL.Implementation.Chart
                 {
                     show = true,
                     position =LabelOption.Positions.Inside,
-                    formatter = "{b} : {c}"
+                    formatter = "{c}"
                 },
                 emphasis = new EmphasisOption
                 {
@@ -176,6 +176,62 @@ namespace React.DAL.Implementation.Chart
 
             return new APIBaseResponse<DonutChart> { Data = option };
         }
+        public async Task<APIBaseResponse<PieChart>> GetPieChartDataAsync(FilterDto filter)
+        {
+            var option = new PieChart
+            {
+                title = new TitleOption
+                {
+                    text = "Referer of a Website",
+                    subtext = "Fake Data",
+                    left = "center"
+                },
+                tooltip = new TooltipOption
+                {
+                    trigger = TooltipOption.Triggers.Item
+                },
+                legend = new LegendOption
+                {
+                    orient = LegendOption.Orients.Vertical,
+                    left = "left"
+                },
+                series = new List<DonutSeriesOption>
+        {
+            new DonutSeriesOption
+            {
+                name = "Access From",
+                type = SeriesOption.Types.Pie,
+                radius = "50%",
+                data = new List<object>
+                {
+                    new { value = 1048, name = "Search Engine" },
+                    new { value = 735, name = "Direct" },
+                    new { value = 580, name = "Email" },
+                    new { value = 484, name = "Union Ads" },
+                    new { value = 300, name = "Video Ads" }
+                },
+                label = new LabelOption
+                {
+                    show = true,
+   formatter = "{c}",
+   position= LabelOption.Positions.Inside
+                },
+                emphasis = new EmphasisOption
+                {
+                    itemStyle = new ItemStyleOption
+                    {
+                        shadowBlur = 10,
+                        shadowOffsetX = 0,
+                        shadowColor = "rgba(0, 0, 0, 0.5)"
+                    }
+                }
+            }
+        }
+            };
+
+            return new APIBaseResponse<PieChart> { Data = option };
+        }
+
 
     }
 

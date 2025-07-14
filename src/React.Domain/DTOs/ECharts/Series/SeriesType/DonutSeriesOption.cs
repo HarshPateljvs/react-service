@@ -9,7 +9,7 @@ namespace React.Domain.DTOs.ECharts.Series.SeriesType
     public class DonutSeriesOption : SeriesOption
     {
         public bool? avoidLabelOverlap { get; set; }
-        public List<string>? radius { get; set; }
+        public object? radius { get; set; }
         public EmphasisOption? emphasis { get; set; }
         public LabelOption? label { get; set; }
         public ItemStyleOption? itemStyle { get; set; }

@@ -9,12 +9,12 @@ using System.Threading.Tasks;
 
 namespace React.DAL.Interface.Chart
 {
+    //https://echarts.apache.org/en/option.html#title
     public interface IChartService
     {
         Task<APIBaseResponse<LineChart>> GetLineChartDataAsync(FilterDto filter);
         Task<APIBaseResponse<BarChart>> GetBarChartDataAsync(FilterDto filter);
         Task<APIBaseResponse<DonutChart>> GetDonutChartDataAsync(FilterDto filter);
-
-
+        Task<APIBaseResponse<PieChart>> GetPieChartDataAsync(FilterDto filter);
     }
 }

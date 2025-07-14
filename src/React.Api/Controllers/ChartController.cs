@@ -38,5 +38,12 @@ namespace React.Api.Controllers
             var response = await _chartService.GetDonutChartDataAsync(filter);
             return Ok(response);
         }
+
+        [HttpPost("GetPieChartData")]
+        public async Task<IActionResult> GetPieChartData([FromBody] FilterDto filter)
+        {
+            var result = await _chartService.GetPieChartDataAsync(filter);
+            return Ok(result);
+        }
     }
 }

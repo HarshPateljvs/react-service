@@ -191,3 +191,34 @@ public class EmployeeController : ControllerBase
 - Separate encrypted logic in `EncryptionHelper` class  
 
 ---
+
+
+
+
+
+---------------------------------------------------------------Chart API-----------------------------------------------------------
+I am building ECharts APIs in .NET Core.
+
+# Rules:
+## 1️⃣ If attributes like `name`, `type`, `data` exist in `series`, use `SeriesOption` base class.
+
+## 2️⃣ If the series has extra attributes like `stack`, `radius`, `barWidth`, etc., split into:
+- `LineSeriesOption`
+- `BarSeriesOption`
+- `DonutSeriesOption`
+
+## 3️⃣ DTO must be created at path:
+`React.Domain.DTOs.ECharts.ChartsDto.{ChartType}Chart.cs`
+Example: `BarChart`, `LineChart`, `DonutChart`
+
+## 4️⃣ Service Method:
+```csharp
+public async Task<APIBaseResponse<{ChartType}Chart>> Get{ChartType}ChartDataAsync(FilterDto filter)
+
+
+[HttpPost("Get{ChartType}ChartData")]
+public async Task<IActionResult> Get{ChartType}ChartData([FromBody] FilterDto filter)
+{
+    var result = await _chartService.Get{ChartType}ChartDataAsync(filter);
+    return Ok(result);
+}
