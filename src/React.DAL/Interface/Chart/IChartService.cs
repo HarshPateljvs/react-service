@@ -16,5 +16,6 @@ namespace React.DAL.Interface.Chart
         Task<APIBaseResponse<BarChart>> GetBarChartDataAsync(FilterDto filter);
         Task<APIBaseResponse<DonutChart>> GetDonutChartDataAsync(FilterDto filter);
         Task<APIBaseResponse<PieChart>> GetPieChartDataAsync(FilterDto filter);
+        Task<APIBaseResponse<StackedBarChart>> GetStackedBarChartDataAsync(FilterDto filter);
     }
 }

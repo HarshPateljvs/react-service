@@ -45,5 +45,12 @@ namespace React.Api.Controllers
             var result = await _chartService.GetPieChartDataAsync(filter);
             return Ok(result);
         }
+
+        [HttpPost("GetStackedBarChartData")]
+        public async Task<IActionResult> GetStackedBarChartData([FromBody] FilterDto filter)
+        {
+            var result = await _chartService.GetStackedBarChartDataAsync(filter);
+            return Ok(result);
+        }
     }
 }

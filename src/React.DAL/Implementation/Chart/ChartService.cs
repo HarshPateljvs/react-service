@@ -125,7 +125,7 @@ namespace React.DAL.Implementation.Chart
                     trigger = TooltipOption.Triggers.Item
                 },
                 legend = new LegendOption
-                {
+                {   
                     top = "5%",
                     left = "center"
                 },
@@ -147,10 +147,11 @@ namespace React.DAL.Implementation.Chart
                 {
                     show = true,
                     position =LabelOption.Positions.Inside,
-                    formatter = "{c}"
+                    formatter = "{d}%"
                 },
                 emphasis = new EmphasisOption
                 {
+                    focus = EmphasisOption.Focuses.Self,
                     label = new LabelOption
                     {
                         show = true,
@@ -230,6 +231,69 @@ namespace React.DAL.Implementation.Chart
             };
 
             return new APIBaseResponse<PieChart> { Data = option };
+        }
+
+
+        public async Task<APIBaseResponse<StackedBarChart>> GetStackedBarChartDataAsync(FilterDto filter)
+        {
+            var option = new StackedBarChart
+            {
+                tooltip = new TooltipOption
+                {
+                    trigger = TooltipOption.Triggers.Axis,
+                    axisPointer = new AxisPointerOption
+                    {
+                        type = AxisPointerOption.Types.Shadow
+                    }
+                },
+                legend = new LegendOption(),
+                grid = new GridOption
+                {
+                    left = "3%",
+                    right = "4%",
+                    bottom = "3%",
+                    containLabel = true
+                },
+                xAxis = new List<XAxisOption>
+        {
+            new XAxisOption
+            {
+                type = "category",
+                data = new List<string> { "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun" }
+            }
+        },
+                yAxis = new List<YAxisOption>
+        {
+            new YAxisOption
+            {
+                type = "value"
+            }
+        },
+                series = new List<BarSeriesOption>
+        {
+            new BarSeriesOption { name = "Direct", type = "bar", emphasis = new EmphasisOption { focus = "series" }, data = new List<object> { 320, 332, 301, 334, 390, 330, 320 }},
+            new BarSeriesOption { name = "Email", type = "bar", stack = "Ad", emphasis = new EmphasisOption { focus = "series" }, data = new List<object> { 120, 132, 101, 134, 90, 230, 210 }},
+            new BarSeriesOption { name = "Union Ads", type = "bar", stack = "Ad", emphasis = new EmphasisOption { focus = "series" }, data = new List<object> { 220, 182, 191, 234, 290, 330, 310 }},
+            new BarSeriesOption { name = "Video Ads", type = "bar", stack = "Ad", emphasis = new EmphasisOption { focus = "series" }, data = new List<object> { 150, 232, 201, 154, 190, 330, 410 }},
+            new BarSeriesOption {
+                name = "Search Engine",
+                type = "bar",
+                emphasis = new EmphasisOption { focus = "series" },
+                data = new List<object> { 862, 1018, 964, 1026, 1679, 1600, 1570 },
+                //markLine = new MarkLineOption
+                //{
+                //    lineStyle = new LineStyleOption { type = "dashed" },
+                //    data = new List<object[]> { new object[] { new { type = "min" }, new { type = "max" } } }
+                //}
+            },
+            new BarSeriesOption { name = "Baidu", type = "bar", barWidth = "5", stack = "Search Engine", emphasis = new EmphasisOption { focus = "series" }, data = new List<object> { 620, 732, 701, 734, 1090, 1130, 1120 }},
+            new BarSeriesOption { name = "Google", type = "bar", stack = "Search Engine", emphasis = new EmphasisOption { focus = "series" }, data = new List<object> { 120, 132, 101, 134, 290, 230, 220 }},
+            new BarSeriesOption { name = "Bing", type = "bar", stack = "Search Engine", emphasis = new EmphasisOption { focus = "series" }, data = new List<object> { 60, 72, 71, 74, 190, 130, 110 }},
+            new BarSeriesOption { name = "Others", type = "bar", stack = "Search Engine", emphasis = new EmphasisOption { focus = "series" }, data = new List<object> { 62, 82, 91, 84, 109, 110, 120 }},
+        }
+            };
+
+            return new APIBaseResponse<StackedBarChart> { Data = option };
         }
 
 

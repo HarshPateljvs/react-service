@@ -10,5 +10,6 @@ namespace React.Domain.DTOs.ECharts.Series.SeriesType
     {
         public string? barWidth { get; set; }
         public LabelOption? label { get; set; }
+        public EmphasisOption? emphasis { get; set; }
     }
 }

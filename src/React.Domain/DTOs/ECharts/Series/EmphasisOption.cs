@@ -11,6 +11,15 @@ namespace React.Domain.DTOs.ECharts.Series
     {
         public ItemStyleOption? itemStyle { get; set; }
         public LabelOption? label { get; set; }
+        public string? focus { get; set; }
+        public static class Focuses
+        {
+            public const string None = "none";
+            public const string Self = "self";
+            public const string Series = "series";
+            public const string Right = "right";
+            public const string Bottom = "bottom";
+        }
     }
 
     public class ItemStyleOption

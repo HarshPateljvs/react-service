@@ -12,6 +12,7 @@ namespace React.Domain.DTOs.ECharts
     {
         public string? name { get; set; }
         public string? type { get; set; }
+        public string? stack { get; set; }
         public List<object>? data { get; set; }
         public static class Types
         {
