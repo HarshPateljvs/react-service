@@ -12,6 +12,7 @@ namespace React.Domain.Common
         public List<string> InfoMessage { get; set; } = new List<string>();
         public List<string> WarningMessage { get; set; } = new List<string>();
         public List<string> ValidationMessage { get; set; } = new List<string>();
+        public List<string> SuccessMessage { get; set; } = new List<string>();
         public bool HasError => ErrorMessage.Any() || ValidationMessage.Any();
         public string ResponseCode { get; set; }
         public int StatusCode { get; set; }
@@ -36,6 +37,11 @@ namespace React.Domain.Common
         public void AddValidation(string message)
         {
             ValidationMessage.Add(message);
+        }
+
+        public void AddSuccess(string message)
+        {
+            SuccessMessage.Add(message);
         }
 
     }

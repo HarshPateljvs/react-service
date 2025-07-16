@@ -63,7 +63,7 @@ namespace React.DAL.Implementation.AppUser
                     Name = userResponse.Data.FirstName + " " + userResponse.Data.LastName,
                     AppUser = userResponse.Data
                 },
-                InfoMessage = new List<string> { "Login Succesfully." }
+                SuccessMessage = new List<string> { "Login Succesfully." }
             };
         }
 
