@@ -22,7 +22,7 @@ namespace React.Api.Controllers
         public async Task<IActionResult> GetLineChartData([FromBody] FilterDto filter)
         {
             var result = await _chartService.GetLineChartDataAsync(filter);
-            return Ok(result);
+            return Ok(result);  
         }
 
         [HttpPost("GetBarChartData")]

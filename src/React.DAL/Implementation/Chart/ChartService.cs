@@ -60,54 +60,63 @@ namespace React.DAL.Implementation.Chart
             var option = new BarChart
             {
                 tooltip = new List<TooltipOption>
-        {
-            new TooltipOption
-            {
-                trigger = TooltipOption.Triggers.Axis,
-                axisPointer = new AxisPointerOption
                 {
-                    type = AxisPointerOption.Types.Shadow
-                }
-            }
-        },
+                    new TooltipOption
+                    {
+                        trigger = TooltipOption.Triggers.Axis,
+                        axisPointer = new AxisPointerOption
+                        {
+                            type = AxisPointerOption.Types.Shadow
+                        }
+                    }
+                },
                 grid = new List<GridOption>
-        {
-            new GridOption
-            {
-                left = "3%",
-                right = "4%",
-                bottom = "3%",
-                containLabel = true
-            }
-        },
+                {
+                    new GridOption
+                    {
+                        left = "3%",
+                        right = "4%",
+                        bottom = "3%",
+                        containLabel = true
+                    }
+                },
                 xAxis = new List<XAxisOption>
-        {
-            new XAxisOption
-            {
-                type = XAxisOption.Types.Category,
-                data = new List<string> { "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun" },
-                axisTick = new AxisTickOption { alignWithLabel = true }
-            }
-        },
+                {
+                    new XAxisOption
+                    {
+                        type = XAxisOption.Types.Category,
+                        data = new List<string> { "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun" },
+                        axisTick = new AxisTickOption { alignWithLabel = true }
+                    }
+                },
                 yAxis = new List<YAxisOption>
-        {
-            new YAxisOption { type = YAxisOption.Types.Value }
-        },
+                {
+                    new YAxisOption { type = YAxisOption.Types.Value }
+                },
                 series = new List<BarSeriesOption>
-        {
-            new BarSeriesOption
-            {
-                name = "Direct",
-                type = SeriesOption.Types.Bar,
-                barWidth = "60%",
-                data = new List<object> { 10, 52, 200, 334, 390, 330, 220 },
-                label = new LabelOption
-        {
-            show = true,
-            position = LabelOption.Positions.Inside // Or Top / Bottom etc.
-        }
-            }
-        }
+                {
+                    new BarSeriesOption
+                    {
+                        name = "Direct",
+                        type = SeriesOption.Types.Bar,
+                        barWidth = "60%",
+                        data = new List<object> { 10, 52, 200, 334, 390, 330, 220 },
+                        label = new LabelOption
+                        {
+                            show = true,
+                            position = LabelOption.Positions.Inside // Or Top / Bottom etc.
+                        }
+                    }
+                },
+                dataZoom = new List<DataZoomOption>
+                {
+                    new DataZoomOption
+                    {
+                        type = "inside",
+                        start = "0",
+                        end = "100"
+                    }
+                }
             };
 
             return new APIBaseResponse<BarChart> { Data = option };
@@ -125,54 +134,54 @@ namespace React.DAL.Implementation.Chart
                     trigger = TooltipOption.Triggers.Item
                 },
                 legend = new LegendOption
-                {   
+                {
                     top = "5%",
                     left = "center"
                 },
                 series = new List<DonutSeriesOption>
-        {
-            new DonutSeriesOption
-            {
-                name = "Access From",
-                type = SeriesOption.Types.Pie,
-                radius = new List<string> { "40%", "70%" },
-                avoidLabelOverlap = false,
-                itemStyle = new ItemStyleOption
                 {
-                    borderRadius = 10,
-                    borderColor = "#fff",
-                    borderWidth = 2
-                },
-                label = new LabelOption
-                {
-                    show = true,
-                    position =LabelOption.Positions.Inside,
-                    formatter = "{d}%"
-                },
-                emphasis = new EmphasisOption
-                {
-                    focus = EmphasisOption.Focuses.Self,
-                    label = new LabelOption
+                    new DonutSeriesOption
                     {
-                        show = true,
-                        fontSize = 40,
-                        fontWeight = "bold"
+                        name = "Access From",
+                        type = SeriesOption.Types.Pie,
+                        radius = new List<string> { "40%", "70%" },
+                        avoidLabelOverlap = false,
+                        itemStyle = new ItemStyleOption
+                        {
+                            borderRadius = 10,
+                            borderColor = "#fff",
+                            borderWidth = 2
+                        },
+                        label = new LabelOption
+                        {
+                            show = true,
+                            position =LabelOption.Positions.Inside,
+                            formatter = "{d}%"
+                        },
+                        emphasis = new EmphasisOption
+                        {
+                            focus = EmphasisOption.Focuses.Self,
+                            label = new LabelOption
+                            {
+                                show = true,
+                                fontSize = 40,
+                                fontWeight = "bold"
+                            }
+                        },
+                        labelLine = new LabelLineOption
+                        {
+                            show = true
+                        },
+                        data = new List<object>
+                        {
+                            new { value = 735, name = "Search Engine" },
+                            new { value = 1048, name = "Direct" },
+                            new { value = 580, name = "Email" },
+                            new { value = 484, name = "Union Ads" },
+                            new { value = 300, name = "Video Ads" }
+                        }
                     }
-                },
-                labelLine = new LabelLineOption
-                {
-                    show = true
-                },
-                data = new List<object>
-                {
-                    new { value = 1048, name = "Search Engine" },
-                    new { value = 735, name = "Direct" },
-                    new { value = 580, name = "Email" },
-                    new { value = 484, name = "Union Ads" },
-                    new { value = 300, name = "Video Ads" }
                 }
-            }
-        }
             };
 
             return new APIBaseResponse<DonutChart> { Data = option };
@@ -197,37 +206,37 @@ namespace React.DAL.Implementation.Chart
                     left = "left"
                 },
                 series = new List<DonutSeriesOption>
-        {
-            new DonutSeriesOption
-            {
-                name = "Access From",
-                type = SeriesOption.Types.Pie,
-                radius = "50%",
-                data = new List<object>
                 {
-                    new { value = 1048, name = "Search Engine" },
-                    new { value = 735, name = "Direct" },
-                    new { value = 580, name = "Email" },
-                    new { value = 484, name = "Union Ads" },
-                    new { value = 300, name = "Video Ads" }
-                },
-                label = new LabelOption
-                {
-                    show = true,
-   formatter = "{c}",
-   position= LabelOption.Positions.Inside
-                },
-                emphasis = new EmphasisOption
-                {
-                    itemStyle = new ItemStyleOption
+                    new DonutSeriesOption
                     {
-                        shadowBlur = 10,
-                        shadowOffsetX = 0,
-                        shadowColor = "rgba(0, 0, 0, 0.5)"
+                        name = "Access From",
+                        type = SeriesOption.Types.Pie,
+                        radius = "50%",
+                        data = new List<object>
+                        {
+                            new { value = 735, name = "Direct" },
+                            new { value = 1048, name = "Search Engine" },
+                            new { value = 580, name = "Email" },
+                            new { value = 484, name = "Union Ads" },
+                            new { value = 300, name = "Video Ads" }
+                        },
+                        label = new LabelOption
+                        {
+                            show = true,
+                            formatter = "{c}",
+                            position= LabelOption.Positions.Inside
+                        },
+                        emphasis = new EmphasisOption
+                        {
+                            itemStyle = new ItemStyleOption
+                            {
+                                shadowBlur = 10,
+                                shadowOffsetX = 0,
+                                shadowColor = "rgba(0, 0, 0, 0.5)"
+                            }
+                        }
                     }
                 }
-            }
-        }
             };
 
             return new APIBaseResponse<PieChart> { Data = option };
@@ -270,27 +279,25 @@ namespace React.DAL.Implementation.Chart
             }
         },
                 series = new List<BarSeriesOption>
-        {
-            new BarSeriesOption { name = "Direct", type = "bar", emphasis = new EmphasisOption { focus = "series" }, data = new List<object> { 320, 332, 301, 334, 390, 330, 320 }},
-            new BarSeriesOption { name = "Email", type = "bar", stack = "Ad", emphasis = new EmphasisOption { focus = "series" }, data = new List<object> { 120, 132, 101, 134, 90, 230, 210 }},
-            new BarSeriesOption { name = "Union Ads", type = "bar", stack = "Ad", emphasis = new EmphasisOption { focus = "series" }, data = new List<object> { 220, 182, 191, 234, 290, 330, 310 }},
-            new BarSeriesOption { name = "Video Ads", type = "bar", stack = "Ad", emphasis = new EmphasisOption { focus = "series" }, data = new List<object> { 150, 232, 201, 154, 190, 330, 410 }},
-            new BarSeriesOption {
-                name = "Search Engine",
-                type = "bar",
-                emphasis = new EmphasisOption { focus = "series" },
-                data = new List<object> { 862, 1018, 964, 1026, 1679, 1600, 1570 },
-                //markLine = new MarkLineOption
-                //{
-                //    lineStyle = new LineStyleOption { type = "dashed" },
-                //    data = new List<object[]> { new object[] { new { type = "min" }, new { type = "max" } } }
-                //}
-            },
-            new BarSeriesOption { name = "Baidu", type = "bar", barWidth = "5", stack = "Search Engine", emphasis = new EmphasisOption { focus = "series" }, data = new List<object> { 620, 732, 701, 734, 1090, 1130, 1120 }},
-            new BarSeriesOption { name = "Google", type = "bar", stack = "Search Engine", emphasis = new EmphasisOption { focus = "series" }, data = new List<object> { 120, 132, 101, 134, 290, 230, 220 }},
-            new BarSeriesOption { name = "Bing", type = "bar", stack = "Search Engine", emphasis = new EmphasisOption { focus = "series" }, data = new List<object> { 60, 72, 71, 74, 190, 130, 110 }},
-            new BarSeriesOption { name = "Others", type = "bar", stack = "Search Engine", emphasis = new EmphasisOption { focus = "series" }, data = new List<object> { 62, 82, 91, 84, 109, 110, 120 }},
-        }
+                {
+                    new BarSeriesOption { name = "Direct", type = "bar", emphasis = new EmphasisOption { focus = "series" }, data = new List<object> { 320, 332, 301, 334, 390, 330, 320 }},
+                    new BarSeriesOption { name = "Email", type = "bar", stack = "Ad", emphasis = new EmphasisOption { focus = "series" }, data = new List<object> { 120, 132, 101, 134, 90, 230, 210 }},
+                    new BarSeriesOption { name = "Union Ads", type = "bar", stack = "Ad", emphasis = new EmphasisOption { focus = "series" }, data = new List<object> { 220, 182, 191, 234, 290, 330, 310 }},
+                    new BarSeriesOption { name = "Video Ads", type = "bar", stack = "Ad", emphasis = new EmphasisOption { focus = "series" }, data = new List<object> { 150, 232, 201, 154, 190, 330, 410 }},
+                    new BarSeriesOption { name = "Search Engine",type = "bar",emphasis = new EmphasisOption { focus = "series" },data = new List<object> { 862, 1018, 964, 1026, 1679, 1600, 1570 } },
+                    new BarSeriesOption { name = "Baidu", type = "bar", barWidth = "5", stack = "Search Engine", emphasis = new EmphasisOption { focus = "series" }, data = new List<object> { 620, 732, 701, 734, 1090, 1130, 1120 }},
+                    new BarSeriesOption { name = "Google", type = "bar", stack = "Search Engine", emphasis = new EmphasisOption { focus = "series" }, data = new List<object> { 120, 132, 101, 134, 290, 230, 220 }},
+                    new BarSeriesOption { name = "Others", type = "bar", stack = "Search Engine", emphasis = new EmphasisOption { focus = "series" }, data = new List<object> { 62, 82, 91, 84, 109, 110, 120 }},
+                },
+                dataZoom = new List<DataZoomOption>
+                {
+                    new DataZoomOption
+                    {
+                        type = "inside",
+                        start = "0",
+                        end = "100"
+                    }
+                }
             };
 
             return new APIBaseResponse<StackedBarChart> { Data = option };

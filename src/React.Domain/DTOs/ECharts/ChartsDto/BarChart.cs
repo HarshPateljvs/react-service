@@ -14,5 +14,7 @@ namespace React.Domain.DTOs.ECharts.ChartsDto
         public List<XAxisOption>? xAxis { get; set; }
         public List<YAxisOption>? yAxis { get; set; }
         public List<BarSeriesOption>? series { get; set; }
+        public List<DataZoomOption>? dataZoom { get; set; }
+
     }
 }
