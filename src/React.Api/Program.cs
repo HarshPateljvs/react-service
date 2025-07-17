@@ -35,7 +35,8 @@ builder.Services.AddCors(options =>
         policy.WithOrigins("http://localhost:3000")
               .AllowAnyHeader()
               .AllowAnyMethod()
-              .AllowCredentials(); // 👈 Required for withCredentials
+              .AllowCredentials()
+              .SetPreflightMaxAge(TimeSpan.FromHours(200)); // 👈 Required for withCredentials
     });
 });
 builder.WebHost.UseUrls("http://+:8001");

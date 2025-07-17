@@ -51,7 +51,7 @@ namespace React.DAL.Implementation.AppUser
                 };
             }
 
-            var token = _jwtTokenGenerator.GenerateToken(userResponse.Data); // optionally generate token
+            var token = _jwtTokenGenerator.GenerateToken(userResponse.Data);
 
             return new APIBaseResponse<LoginResponseDto>
             {

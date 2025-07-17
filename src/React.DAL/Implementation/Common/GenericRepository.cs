@@ -21,10 +21,13 @@ namespace React.DAL.Implementation.Common
         public async Task<APIBaseResponse<IEnumerable<T>>> GetAllAsync(FilterDto? filterDto = null)
         {
             IQueryable<T> query = _dbSet;
-
-            // Apply filters if any
+            query = QueryBuilder.ApplyFilters(query, filterDto, false);
             var totalCount = await query.CountAsync();
-            query = QueryBuilder.ApplyFilters(query, filterDto);
+            if (filterDto != null && filterDto.PageNo > 0 && filterDto.PageSize > 0)
+            {
+                int skip = (filterDto.PageNo - 1) * filterDto.PageSize;
+                query = query.Skip(skip).Take(filterDto.PageSize);
+            }
             var data = await query.ToListAsync();
             return new APIBaseResponse<IEnumerable<T>>
             {

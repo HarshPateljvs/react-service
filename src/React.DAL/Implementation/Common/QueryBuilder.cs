@@ -8,7 +8,7 @@ namespace React.DAL.Implementation.Common
 {
     public static class QueryBuilder
     {
-        public static IQueryable<T> ApplyFilters<T>(IQueryable<T> query, FilterDto? filterDto)
+        public static IQueryable<T> ApplyFilters<T>(IQueryable<T> query, FilterDto? filterDto, bool applyPagination = true)
         {
             if (filterDto == null)
                 return query;
@@ -136,7 +136,7 @@ namespace React.DAL.Implementation.Common
                 }
             }
 
-            if (filterDto.PageNo > 0 && filterDto.PageSize > 0)
+            if (applyPagination && filterDto.PageNo > 0 && filterDto.PageSize > 0)
             {
                 int skip = (filterDto.PageNo - 1) * filterDto.PageSize;
                 query = query.Skip(skip).Take(filterDto.PageSize);
