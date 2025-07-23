@@ -12,8 +12,8 @@ namespace ApplicationSetup.Middleware
             app.UseStaticFiles();
             app.UseDirectoryBrowser(new DirectoryBrowserOptions
             {
-                FileProvider = new PhysicalFileProvider(StaticResource.GetRootLogDirectory()),
-                RequestPath = "/logs"
+                FileProvider = new PhysicalFileProvider(StaticResource.GetFolder(StaticResource.Logs)),
+                RequestPath = "/"+StaticResource.Logs
             });
             app.UseCors("AllowFrontend");
             app.UseMiddleware<UnHandledExceptionMiddleware>();
@@ -21,6 +21,7 @@ namespace ApplicationSetup.Middleware
             app.UseAuthentication();
             app.UseAuthorization();
             app.MapControllers();
+            StaticResource.Services = app.Services;
         }
     }
 }

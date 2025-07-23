@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using React.DAL.Data;
+using React.DAL.Utils;
 using React.Domain.Models.mstError;
 using System;
 using System.Diagnostics;
@@ -36,8 +37,8 @@ namespace React.DAL.Logger
 
                 // Generate log file path and URL
                 var fileName = $"Error_{DateTime.Now:yyyy-MM-dd}.txt";
-                var logPath = React.DAL.Utils.StaticResource.GetLogFolderForController(controller);
-                var fileUrl = React.DAL.Utils.StaticResource.GetLogFileUrl(controller, fileName, context);
+                var logPath = React.DAL.Utils.StaticResource.GetFolder(StaticResource.Logs+StaticResource.DoubleSlash+StaticResource.Errorlog+StaticResource.DoubleSlash + controller);
+                var fileUrl = React.DAL.Utils.StaticResource.GetFileUrl(StaticResource.Logs + StaticResource.Slash + StaticResource.Errorlog + StaticResource.Slash + controller, fileName);
                 log = new ExceptionLog
                 {
                     ExceptionType = ex.GetType().ToString(),

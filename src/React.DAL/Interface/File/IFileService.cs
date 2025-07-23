@@ -12,6 +12,6 @@ namespace React.DAL.Interface.File
 {
     public interface IFileService
     {
-        Task<APIBaseResponse<FileUploadResponseDto>> UploadFileAsync(FileUploadInput dto, HttpContext context);
+        Task<APIBaseResponse<FileUploadResponseDto>> UploadFileAsync(FileUploadInput dto);
     }
 }

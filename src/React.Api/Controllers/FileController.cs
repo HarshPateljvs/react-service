@@ -20,7 +20,7 @@ namespace React.Api.Controllers
         [HttpPost("Upload")]
         public async Task<IActionResult> UploadTempImage([FromForm] FileUploadInput dto)
         {
-            var response = await _fileService.UploadFileAsync(dto, HttpContext);
+            var response = await _fileService.UploadFileAsync(dto);
             return Ok(response);
         }
 

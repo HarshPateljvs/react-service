@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace React.Domain.Common
 {
-    public class Files
+    public class ImageProperty
     {
-        public string FileName { get; set; } = "";
+        public string ImageName { get; set; } = "";
         public string OriginalImage { get; set; } = "";
         public string OriginalImageURL { get; set; } = "";
 
@@ -24,7 +24,7 @@ namespace React.Domain.Common
         public string CustomImage { get; set; } = "";
         public string CustomImageURL { get; set; } = "";
 
-        public string Alt { get; set; } = "";
+        public string AltImageText { get; set; } = "";
     }
 
 }

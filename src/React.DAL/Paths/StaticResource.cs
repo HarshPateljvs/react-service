@@ -1,122 +1,116 @@
 ﻿using Microsoft.AspNetCore.Http;
 using React.Domain.Common;
-using System.Globalization;
+using System;
+using System.IO;
+using static System.Net.WebRequestMethods;
 
 namespace React.DAL.Utils
 {
     public static class StaticResource
     {
-        #region FilePathNames
-        public static string Temp => "temp"; 
-        public static string Files => "Files"; 
-        public static string Employee => Files + "Employee";
+        static IServiceProvider services = null;
+        public static IServiceProvider Services
+        {
+            get { return services; }
+            set
+            {
+                if (services != null)
+                {
+                    throw new Exception("Can't set once a value has already been set.");
+                }
+                services = value;
+            }
+        }
+        public static HttpContext HttpContext_Current
+        {
+            get
+            {
+                IHttpContextAccessor httpContextAccessor = services.GetService(typeof(IHttpContextAccessor)) as IHttpContextAccessor;
+                return httpContextAccessor?.HttpContext;
+            }
+        }
+
+
+        #region Constants
+
+        public static string Temp => "temp";
+        public static string Errorlog => "Errorlogs";
+        public static string Logs => "logs";
+        public static string Files => "Files";
+        public static string Employee => Path.Combine(Files, "Employee");
         public static string Thumb => "thumb";
+        public static string Wwwroot => "wwwroot";
+        public static string Slash => "/";
+        public static string DoubleSlash => "\\";
+
         #endregion
 
-        #region Root Paths  
-        public static string GetRootDirectory()
-        {
-            // Go from /bin/Debug/net8.0 to project root
-            return Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..", "..", "..");
-        }
-        public static string GetWwwRootPath()
-        {
-            return Path.GetFullPath(Path.Combine(GetRootDirectory(), "wwwroot"));
-        } 
+        #region Root Paths
+
+        public static string GetRootDirectory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..", "..", "..");
+
+        public static string GetWwwRootPath = Path.GetFullPath(Path.Combine(GetRootDirectory, StaticResource.Wwwroot));
+
         #endregion
 
-        #region Log Methods
-        public static string GetRootLogDirectory()
+        #region General File Access
+        public static string GetFolder(string FolderPath)
         {
-            var patlogpath = Path.Combine(GetWwwRootPath(), "logs");
-            Directory.CreateDirectory(patlogpath);
-            return patlogpath;
+            string folderPath = Path.Combine(GetWwwRootPath, FolderPath);
+            Directory.CreateDirectory(folderPath);
+            return folderPath;
         }
-        public static string GetLogFileUrl(string controllerName, string fileName, HttpContext context)
-        {
-            var scheme = context.Request.Scheme;
-            var host = context.Request.Host.Value;
-            return $"{scheme}://{host}/logs/log/{controllerName}/{fileName}";
-        }
-        public static string GetLogFolderForController(string controllerName)
-        {
-            // This points to: D:\Projects\DotNet\ReactAPIs\Code\logs\log\UserRole
-            var path = Path.Combine(GetRootLogDirectory(), "log", controllerName);
-            Directory.CreateDirectory(path); // Ensure folder exists
-            return path;
-        }
-        #endregion
 
-
-        /// <summary>
-        /// Returns full physical path to the file (and creates directory if not exists).
-        /// Example: GetFilePath("logs", "log/User", "2025-07-23.txt")
-        /// </summary>
-        public static string GetFilePath(string rootFolder, string subFolder, string fileName)
+        public static string GetFilePath(string FolderPath, string fileName)
         {
-            var folderPath = Path.Combine(GetWwwRootPath(), rootFolder, subFolder);
+            string folderPath = Path.Combine(GetWwwRootPath, FolderPath);
             Directory.CreateDirectory(folderPath);
             return Path.Combine(folderPath, fileName);
         }
-
-        /// <summary>
-        /// Returns full URL to the file via HttpContext.
-        /// </summary>
-        public static string GetFilePathWithURL(string rootFolder, string subFolder, string fileName, HttpContext context)
+        public static string GetFileUrl(string FolderPath, string fileName)
         {
-            var scheme = context.Request.Scheme;
-            var host = context.Request.Host.Value;
-            return $"{scheme}://{host}/{rootFolder}/{subFolder}/{fileName}";
+            var scheme = HttpContext_Current.Request.Scheme;
+            var host = HttpContext_Current.Request.Host.Value;
+            return $"{scheme}://{host}/{FolderPath}/{fileName}";
         }
 
-        public static Files? GetFile(string basePath, string controllerSubPath, string? fileName, HttpContext context, string? customSize = null)
+        public static string CheckFileExist(string Filepath, int width = 600, int height = 600)
         {
-            if (string.IsNullOrWhiteSpace(fileName))
-                return null;
+            string fullPath = Path.Combine(GetWwwRootPath, Filepath.TrimStart('/', '\\'));
 
-            string defaultNotFound = "ImageNotFound.jpg";
-
-            string subFolder = Path.Combine(DateTime.Now.Ticks.ToString(), controllerSubPath).Replace("\\", "/");
-
-            string finalFileName = fileName!;
-            string altText = "Loaded image";
-
-            string originalPath = GetFilePath(basePath, subFolder, fileName!);
-            if (!File.Exists(originalPath))
+            if (System.IO.File.Exists(fullPath))
             {
-                finalFileName = defaultNotFound;
-                altText = "Image not found";
+                if (width == -1)
+                {
+                    return Filepath.Replace("\\", "/");
+                }
+
+                FileInfo finfo = new FileInfo(fullPath);
+                return $"/thumb/{width}x{height}/{finfo.LastWriteTime.Ticks}/{Filepath.Replace("\\", "/")}";
             }
 
-            var file = new Files
-            {
-                FileName = finalFileName,
-                Alt = altText,
-                OriginalImage = GetFilePath(basePath, subFolder, finalFileName),
-                OriginalImageURL = GetFilePathWithURL(basePath, subFolder, finalFileName, context)
-            };
+            return ""; // File not found
+        }
 
-            if (!string.IsNullOrWhiteSpace(customSize))
-            {
-                string customPath = $"{customSize}/{subFolder}";
+        public static ImageProperty? ImageObject(string FilePath, string fileName, int width = 0, int height = 0)
+        {
+            ImageProperty objImageProperty = new ImageProperty();
+            if (string.IsNullOrWhiteSpace(fileName + StaticResource.DoubleSlash + fileName))
+                return null;
 
-                file.CustomImage = GetFilePath(Thumb, customPath, finalFileName);
-                file.CustomImageURL = GetFilePathWithURL(Thumb, customPath, finalFileName, context);
+            if (width > 0 && height > 0)
+            {
+                objImageProperty.CustomImage = CheckFileExist(FilePath + StaticResource.DoubleSlash + fileName, width, height);
             }
             else
             {
-                file.SmallImage = GetFilePath(Thumb, $"500x500/{subFolder}", finalFileName);
-                file.SmallImageURL = GetFilePathWithURL(Thumb, $"500x500/{subFolder}", finalFileName, context);
-
-                file.MediumImage = GetFilePath(Thumb, $"1000x1000/{subFolder}", finalFileName);
-                file.MediumImageURL = GetFilePathWithURL(Thumb, $"1000x1000/{subFolder}", finalFileName, context);
-
-                file.LargeImage = GetFilePath(Thumb, $"1920x1080/{subFolder}", finalFileName);
-                file.LargeImageURL = GetFilePathWithURL(Thumb, $"1920x1080/{subFolder}", finalFileName, context);
+                objImageProperty.SmallImage = CheckFileExist(FilePath + StaticResource.DoubleSlash + fileName, 500, 500);
+                objImageProperty.MediumImage = CheckFileExist(FilePath + StaticResource.DoubleSlash + fileName, 1000, 1000);
+                objImageProperty.LargeImage = CheckFileExist(FilePath + StaticResource.DoubleSlash + fileName, 1920, 1080);
             }
-
-            return file;
+            return objImageProperty;
         }
+        #endregion
 
     }
 }

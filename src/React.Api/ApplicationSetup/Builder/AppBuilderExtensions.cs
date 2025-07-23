@@ -1,12 +1,14 @@
-﻿using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using ApplicationSetup.Swagger;
-using ApplicationSetup.Middleware;
-using ApplicationSetup.Authentication;
-using ApplicationSetup.Services;
+﻿using ApplicationSetup.Authentication;
 using ApplicationSetup.Controllers;
 using ApplicationSetup.Cors;
+using ApplicationSetup.Middleware;
+using ApplicationSetup.Services;
+using ApplicationSetup.Swagger;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.FileProviders;
+using React.DAL.Utils;
 
 namespace ApplicationSetup.Builder
 {
@@ -22,6 +24,8 @@ namespace ApplicationSetup.Builder
             builder.Services.RegisterApplicationServices(builder.Configuration);
             builder.Services.ConfigureControllers();
             builder.Services.ConfigureSwagger();
+            IFileProvider physicalProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), "wwwroot"));
+            builder.Services.AddSingleton<IFileProvider>(physicalProvider);
         }
 
         public static void RunApp(this WebApplication app)

@@ -17,13 +17,13 @@ namespace ApplicationSetup.Services
                 options.UseSqlServer(config.GetConnectionString("DefaultConnection")));
 
             services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
-            RegisterServicesByConvention(services);
             services.AddScoped<ErrorMgmt>();
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            RegisterServicesByConvention(services);
         }
 
         private static void RegisterServicesByConvention(IServiceCollection services)
         {
-            // Get all loaded assemblies (current domain, not hardcoded)
             var assemblies = AppDomain.CurrentDomain.GetAssemblies()
                 .Where(a => !a.IsDynamic && !string.IsNullOrEmpty(a.FullName) && (
                     a.FullName!.Contains("DAL") || a.FullName.Contains("React")));

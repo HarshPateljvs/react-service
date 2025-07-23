@@ -14,26 +14,27 @@ namespace React.DAL.Implementation.File
 {
     public class FileService : IFileService
     {
-        public async Task<APIBaseResponse<FileUploadResponseDto>> UploadFileAsync(FileUploadInput dto, HttpContext context)
+        public async Task<APIBaseResponse<FileUploadResponseDto>> UploadFileAsync(FileUploadInput input)
         {
-            if (dto.File == null || string.IsNullOrWhiteSpace(dto.Folder))
+            if (input.File == null || string.IsNullOrWhiteSpace(input.Folder))
                 throw new ArgumentException("File and Folder are required.");
 
-            var fileName = $"{Guid.NewGuid()}{Path.GetExtension(dto.File.FileName)}";
+            var fileName = $"{Guid.NewGuid()}{Path.GetExtension(input.File.FileName)}";
 
-            var fullPath = StaticResource.GetFilePath(StaticResource.Temp, dto.Folder, fileName);
+            var fullPath = StaticResource.GetFilePath(StaticResource.Temp + StaticResource.DoubleSlash + input.Folder, fileName);
 
             using (var stream = new FileStream(fullPath, FileMode.Create))
             {
-                await dto.File.CopyToAsync(stream);
+                await input.File.CopyToAsync(stream);
             }
 
             var response = new APIBaseResponse<FileUploadResponseDto>
             {
                 Data = new FileUploadResponseDto
                 {
-                    FileName = fileName,
-                    FileUrl = StaticResource.GetFilePathWithURL(StaticResource.Temp, dto.Folder, fileName, context)
+                    FileName = StaticResource.Slash + StaticResource.Temp + StaticResource.Slash + input.Folder +fileName,
+                    FileUrl = StaticResource.GetFileUrl(StaticResource.Temp + StaticResource.Slash + input.Folder, fileName),
+                    ImageProp = StaticResource.ImageObject(StaticResource.Temp + StaticResource.DoubleSlash + input.Folder, fileName, 0, 0)
                 },
                 StatusCode = 200,
                 ResponseCode = ResponseCodes.SUCCESS
