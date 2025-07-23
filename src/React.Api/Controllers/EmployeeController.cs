@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace React.Api.Controllers
 {
-    [Authorize]
+    //[Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public class EmployeeController : ControllerBase

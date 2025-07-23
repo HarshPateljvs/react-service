@@ -34,5 +34,6 @@ namespace React.Domain.Common
         // 💡 Informational or fallback codes
         public const string NO_CONTENT = "204";
         public const string UNKNOWN_ERROR = "UNK_500";
+        public const string CORS_ORIGIN_NOT_ALLOWED = "CROS";
     }
 }
