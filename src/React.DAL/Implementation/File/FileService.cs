@@ -1,9 +1,13 @@
 ﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.FileProviders;
 using React.DAL.Interface.File;
 using React.DAL.Utils;
 using React.Domain.Common;
 using React.Domain.DTOs.Request.File;
 using React.Domain.DTOs.Response.File;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Processing;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -41,6 +45,50 @@ namespace React.DAL.Implementation.File
             };
             return response;
         }
+
+        #region Image Resizer
+        private readonly IFileProvider _fileProvider;
+
+        public FileService(IFileProvider fileProvider)
+        {
+            _fileProvider = fileProvider;
+        }
+
+        public async Task<FileStreamResult> GetResizedImageAsync(string url, long timestamp, int width, int height)
+        {
+            try
+            {
+                url = "/" + url.TrimStart('/');
+                var originalPath = PathString.FromUriComponent(url);
+                var fileInfo = _fileProvider.GetFileInfo(originalPath);
+
+                if (!fileInfo.Exists)
+                    throw new FileNotFoundException("Image not found", fileInfo.PhysicalPath);
+
+                var resizedRelativePath = React.DAL.Paths.ExtenstionMethods.ReplaceExtension($"/thumb/{width}x{height}/{timestamp}/{url}");
+                var resizedInfo = _fileProvider.GetFileInfo(resizedRelativePath);
+
+                // Ensure directory exists
+                Directory.CreateDirectory(Path.GetDirectoryName(resizedInfo.PhysicalPath)!);
+
+                using (var stream = new FileStream(fileInfo.PhysicalPath, FileMode.Open, FileAccess.Read, FileShare.Read))
+                using (SixLabors.ImageSharp.Image image = SixLabors.ImageSharp.Image.Load(stream))
+                {
+                    image.Mutate(x => x.Resize(width, height));
+                    await image.SaveAsync(resizedInfo.PhysicalPath);
+                }
+
+                var resultStream = new FileStream(resizedInfo.PhysicalPath, FileMode.Open, FileAccess.Read);
+                return new FileStreamResult(resultStream, "image/jpeg");
+            }
+            catch
+            {
+                throw;
+            }
+        }
+
+     
+        #endregion
     }
 
 }

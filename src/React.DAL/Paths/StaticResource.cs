@@ -95,13 +95,12 @@ namespace React.DAL.Utils
         public static ImageProperty? ImageObject(string FilePath, string fileName, int width = 0, int height = 0)
         {
             ImageProperty objImageProperty = new ImageProperty();
-            if (string.IsNullOrWhiteSpace(fileName + StaticResource.DoubleSlash + fileName))
+            if (string.IsNullOrWhiteSpace(fileName))
                 return null;
 
             if (width > 0 && height > 0)
             {
                 objImageProperty.CustomImage = CheckFileExist(FilePath + StaticResource.DoubleSlash + fileName, width, height);
-
             }
             else
             {

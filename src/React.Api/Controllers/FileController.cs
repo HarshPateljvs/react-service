@@ -9,6 +9,7 @@ namespace React.Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [ApiExplorerSettings(IgnoreApi = true)]
     public class FileController : ControllerBase
     {
         private readonly IFileService _fileService;
@@ -23,6 +24,11 @@ namespace React.Api.Controllers
             var response = await _fileService.UploadFileAsync(dto);
             return Ok(response);
         }
-
+        [Route("/thumb/{width}x{height}/{timestamp}/{*url}")]
+        public async Task<IActionResult> Resize(int width, int height, long timestamp, string url)
+        {
+            var result = await _fileService.GetResizedImageAsync(url, timestamp, width, height);
+            return result;
+        }
     }
 }
