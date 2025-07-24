@@ -101,6 +101,7 @@ namespace React.DAL.Utils
             if (width > 0 && height > 0)
             {
                 objImageProperty.CustomImage = CheckFileExist(FilePath + StaticResource.DoubleSlash + fileName, width, height);
+
             }
             else
             {
