@@ -24,7 +24,7 @@ namespace React.Api.Controllers
             var response = await _fileService.UploadFileAsync(dto);
             return Ok(response);
         }
-        [Route("/thumb/{width}x{height}/{timestamp}/{*url}")]
+        [Route("/{StaticResource.Thumb}/{width}x{height}/{timestamp}/{*url}")]
         public async Task<IActionResult> Resize(int width, int height, long timestamp, string url)
         {
             var result = await _fileService.GetResizedImageAsync(url, timestamp, width, height);

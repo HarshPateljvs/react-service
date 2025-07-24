@@ -9,8 +9,6 @@ namespace React.Domain.DTOs.Response.File
 {
     public class FileUploadResponseDto
     {
-        public string FileName { get; set; }
-        public string FileUrl { get; set; }
         public ImageProperty? ImageProp { get; set; }
     }
 }

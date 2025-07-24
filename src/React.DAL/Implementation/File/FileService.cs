@@ -25,7 +25,7 @@ namespace React.DAL.Implementation.File
 
             var fileName = $"{Guid.NewGuid()}{Path.GetExtension(input.File.FileName)}";
 
-            var fullPath = StaticResource.GetFilePath(StaticResource.Temp + StaticResource.DoubleSlash + input.Folder, fileName);
+            var fullPath = StaticResource.GetFilePath(StaticResource.Temp + StaticResource.FileUniqueSept + input.Folder, fileName);
 
             using (var stream = new FileStream(fullPath, FileMode.Create))
             {
@@ -36,9 +36,9 @@ namespace React.DAL.Implementation.File
             {
                 Data = new FileUploadResponseDto
                 {
-                    FileName = StaticResource.Slash + StaticResource.Temp + StaticResource.Slash + input.Folder +fileName,
-                    FileUrl = StaticResource.GetFileUrl(StaticResource.Temp + StaticResource.Slash + input.Folder, fileName),
-                    ImageProp = StaticResource.ImageObject(StaticResource.Temp + StaticResource.DoubleSlash + input.Folder, fileName, 0, 0)
+                    //FileName = StaticResource.FileUniqueSept + StaticResource.Temp + StaticResource.FileUniqueSept + input.Folder + fileName,
+                    //FileUrl = StaticResource.GetFileUrl(StaticResource.Temp + StaticResource.FileUniqueSept + input.Folder + StaticResource.FileUniqueSept + fileName),
+                    ImageProp = StaticResource.ImageObject( StaticResource.Temp + StaticResource.FileUniqueSept + input.Folder, fileName, 0, 0)
                 },
                 StatusCode = 200,
                 ResponseCode = ResponseCodes.SUCCESS
@@ -56,38 +56,31 @@ namespace React.DAL.Implementation.File
 
         public async Task<FileStreamResult> GetResizedImageAsync(string url, long timestamp, int width, int height)
         {
-            try
+
+            url = "/" + url.TrimStart('/');
+            var originalPath = PathString.FromUriComponent(url);
+            var fileInfo = _fileProvider.GetFileInfo(originalPath);
+
+            if (!fileInfo.Exists)
+                throw new FileNotFoundException("Image not found", fileInfo.PhysicalPath);
+
+            var resizedRelativePath = React.DAL.Paths.ExtenstionMethods.ReplaceExtension($"/{StaticResource.Thumb}/{width}x{height}/{timestamp}/{url}");
+            var resizedInfo = _fileProvider.GetFileInfo(resizedRelativePath);
+
+            // Ensure directory exists
+            Directory.CreateDirectory(Path.GetDirectoryName(resizedInfo.PhysicalPath)!);
+
+            using (var stream = new FileStream(fileInfo.PhysicalPath, FileMode.Open, FileAccess.Read, FileShare.Read))
+            using (SixLabors.ImageSharp.Image image = SixLabors.ImageSharp.Image.Load(stream))
             {
-                url = "/" + url.TrimStart('/');
-                var originalPath = PathString.FromUriComponent(url);
-                var fileInfo = _fileProvider.GetFileInfo(originalPath);
-
-                if (!fileInfo.Exists)
-                    throw new FileNotFoundException("Image not found", fileInfo.PhysicalPath);
-
-                var resizedRelativePath = React.DAL.Paths.ExtenstionMethods.ReplaceExtension($"/thumb/{width}x{height}/{timestamp}/{url}");
-                var resizedInfo = _fileProvider.GetFileInfo(resizedRelativePath);
-
-                // Ensure directory exists
-                Directory.CreateDirectory(Path.GetDirectoryName(resizedInfo.PhysicalPath)!);
-
-                using (var stream = new FileStream(fileInfo.PhysicalPath, FileMode.Open, FileAccess.Read, FileShare.Read))
-                using (SixLabors.ImageSharp.Image image = SixLabors.ImageSharp.Image.Load(stream))
-                {
-                    image.Mutate(x => x.Resize(width, height));
-                    await image.SaveAsync(resizedInfo.PhysicalPath);
-                }
-
-                var resultStream = new FileStream(resizedInfo.PhysicalPath, FileMode.Open, FileAccess.Read);
-                return new FileStreamResult(resultStream, "image/jpeg");
+                image.Mutate(x => x.Resize(width, height));
+                await image.SaveAsync(resizedInfo.PhysicalPath);
             }
-            catch
-            {
-                throw;
-            }
+
+            var resultStream = new FileStream(resizedInfo.PhysicalPath, FileMode.Open, FileAccess.Read);
+            return new FileStreamResult(resultStream, "image/jpeg");
+
         }
-
-     
         #endregion
     }
 

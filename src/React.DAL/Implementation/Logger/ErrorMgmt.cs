@@ -37,8 +37,8 @@ namespace React.DAL.Logger
 
                 // Generate log file path and URL
                 var fileName = $"Error_{DateTime.Now:yyyy-MM-dd}.txt";
-                var logPath = React.DAL.Utils.StaticResource.GetFolder(StaticResource.Logs+StaticResource.DoubleSlash+StaticResource.Errorlog+StaticResource.DoubleSlash + controller);
-                var fileUrl = React.DAL.Utils.StaticResource.GetFileUrl(StaticResource.Logs + StaticResource.Slash + StaticResource.Errorlog + StaticResource.Slash + controller, fileName);
+                var logPath = React.DAL.Utils.StaticResource.GetFolder(StaticResource.Logs + StaticResource.FileUniqueSept + StaticResource.Errorlog + StaticResource.FileUniqueSept + controller);
+                var fileUrl = React.DAL.Utils.StaticResource.GetFileUrl(StaticResource.Logs + StaticResource.FileUniqueSept + StaticResource.Errorlog + StaticResource.FileUniqueSept + controller + StaticResource.FileUniqueSept + fileName);
                 log = new ExceptionLog
                 {
                     ExceptionType = ex.GetType().ToString(),
