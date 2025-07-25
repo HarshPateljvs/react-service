@@ -30,5 +30,12 @@ namespace React.Api.Controllers
             var result = await _fileService.GetResizedImageAsync(url, timestamp, width, height);
             return result;
         }
+
+        [Route("/{width}x{height}/{*url}")]
+        public async Task<IActionResult> ThumbImage(int width, int height, string url)
+        {
+            var result = await _fileService.GetThumbImage(url, width, height);
+            return Ok(result);
+        }
     }
 }

@@ -361,6 +361,6 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
-/src/React.Api/wwwroot/temp/Employee
+/src/React.Api/wwwroot/temp/
 /src/React.Api/wwwroot/thumb
-/src/React.Api/wwwroot/Files/Employee
+/src/React.Api/wwwroot/Files/

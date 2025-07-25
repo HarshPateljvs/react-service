@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.FileProviders;
 using React.DAL.Paths;
 using React.Domain.Common;
 using System;
@@ -48,10 +50,16 @@ namespace React.DAL.Utils
 
         #region Paths
 
-        public static string GetRootDirectory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..", "..", "..");
+        //public static string GetRootDirectory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..", "..", "..");
 
-        public static string GetWwwRootPath = Path.GetFullPath(Path.Combine(GetRootDirectory, StaticResource.Wwwroot));
-
+        //public static string GetWwwRootPath = Path.GetFullPath(Path.Combine(GetRootDirectory, StaticResource.Wwwroot));
+        public static string GetWwwRootPath
+        {
+            get
+            {
+                return Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
+            }
+        }
         #endregion
 
         #region General File Access
@@ -69,6 +77,25 @@ namespace React.DAL.Utils
             string folderPath = Path.Combine(GetWwwRootPath, normalized);
             Directory.CreateDirectory(folderPath);
             return Path.Combine(folderPath, fileName);
+        }
+
+        public static void MoveFile(string fromPath, string toPath, bool overwrite = true)
+        {
+            if (System.IO.File.Exists(fromPath))
+            {
+                // Ensure target directory exists
+                Directory.CreateDirectory(Path.GetDirectoryName(toPath)!);
+
+                System.IO.File.Move(fromPath, toPath, overwrite);
+            }
+        }
+
+        public static void DeleteFile(string path)
+        {
+            if (System.IO.File.Exists(path))
+            {
+                System.IO.File.Delete(path);
+            }
         }
         public static string GetFileUrl(string BaseURL)
         {

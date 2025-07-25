@@ -1,8 +1,10 @@
 ﻿using React.Domain.Common;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
 
 namespace React.DAL.Implementation.Common
 {
@@ -71,7 +73,7 @@ namespace React.DAL.Implementation.Common
                 var keyword = filterDto.SearchText.ToLower();
                 Expression? combined = null;
 
-                foreach (var prop in typeof(T).GetProperties())
+                foreach (var prop in typeof(T).GetProperties().Where(p => p.GetCustomAttribute<NotMappedAttribute>() == null))
                 {
                     var propertyAccess = Expression.Property(parameter, prop);
 

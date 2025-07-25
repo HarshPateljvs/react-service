@@ -14,7 +14,8 @@ namespace ApplicationSetup.Services
         public static void RegisterApplicationServices(this IServiceCollection services, IConfiguration config)
         {
             services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlServer(config.GetConnectionString("DefaultConnection")));
+                options.UseSqlServer(config.GetConnectionString("DefaultConnection"),
+                sqlOptions => sqlOptions.EnableRetryOnFailure()));
 
             services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
             services.AddScoped<ErrorMgmt>();

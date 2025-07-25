@@ -1,5 +1,7 @@
-﻿using React.DAL.Interface.Common;
+﻿using React.DAL.Implementation.File;
+using React.DAL.Interface.Common;
 using React.DAL.Interface.Employee;
+using React.DAL.Interface.File;
 using React.Domain.Common;
 using React.Domain.Models.Employee;
 using React.Domain.Models.User;
@@ -11,15 +13,26 @@ namespace React.DAL.Implementation.Employee
     public class EmployeeService : IEmployeeService
     {
         private readonly IGenericRepository<React.Domain.Models.Employee.Employee> _employeeRepo;
-
-        public EmployeeService(IGenericRepository<React.Domain.Models.Employee.Employee> employeeRepo)
+        private readonly IFileService _fileRepo;
+        public EmployeeService(IGenericRepository<React.Domain.Models.Employee.Employee> employeeRepo,IFileService fileService)
         {
             _employeeRepo = employeeRepo;
+            _fileRepo = fileService;
         }
 
         public async Task<APIBaseResponse<IEnumerable<React.Domain.Models.Employee.Employee>>> GetAllEmployeesAsync(FilterDto? filter)
         {
-            return await _employeeRepo.GetAllAsync(filter);
+            var response = await _employeeRepo.GetAllAsync(filter);
+
+            if (response?.Data != null)
+            {
+                foreach (var emp in response.Data)
+                {
+                    emp.EmployeeImages = await _fileRepo.GetImagesByModuleAsync("Employee", "Employee", emp.Id);
+                }
+            }
+
+            return response;
         }
 
         public async Task<APIBaseResponse<React.Domain.Models.Employee.Employee>> GetEmployeeByIdAsync(FilterDto? filter)
@@ -33,6 +46,7 @@ namespace React.DAL.Implementation.Employee
 
             if (response.ResponseCode == ResponseCodes.CREATED)
             {
+                await _fileRepo.ManageImagesAsync("Employee", "Employee", response.Data.Id, employee.EmployeeImages);
                 response.AddInfo("Employee created successfully.");
             }
             return response;

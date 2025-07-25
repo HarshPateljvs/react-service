@@ -15,6 +15,8 @@ namespace React.DAL.Interface.File
     {
         Task<APIBaseResponse<FileUploadResponseDto>> UploadFileAsync(FileUploadInput dto);
         Task<FileStreamResult> GetResizedImageAsync(string url, long timestamp, int width, int height);
-
+        Task<APIBaseResponse<ThumbImageResult>> GetThumbImage(string url, int width, int height);
+        Task ManageImagesAsync(string tableName, string moduleName, int moduleId, ImageInfoRequest imageRequest);
+        Task<ImageInfoRequest> GetImagesByModuleAsync(string tableName, string moduleName, int moduleId);
     }
 }

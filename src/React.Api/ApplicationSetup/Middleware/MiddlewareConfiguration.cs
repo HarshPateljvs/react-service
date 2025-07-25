@@ -9,7 +9,11 @@ namespace ApplicationSetup.Middleware
     {
         public static void UseMiddlewarePipeline(this WebApplication app)
         {
-            app.UseStaticFiles();
+                app.UseStaticFiles();
+            //app.UseStaticFiles(new StaticFileOptions
+            //{
+            //    FileProvider = app.Services.GetRequiredService<IFileProvider>()
+            //});
             app.UseDirectoryBrowser(new DirectoryBrowserOptions
             {
                 FileProvider = new PhysicalFileProvider(StaticResource.GetFolder(StaticResource.Logs)),
