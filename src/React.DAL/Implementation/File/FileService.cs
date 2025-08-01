@@ -70,6 +70,11 @@ namespace React.DAL.Implementation.File
 
             var resizedRelativePath = React.DAL.Paths.ExtenstionMethods.ReplaceExtension($"/{StaticResource.Thumb}/{width}x{height}/{timestamp}/{url}");
             var resizedInfo = _fileProvider.GetFileInfo(resizedRelativePath);
+            if (resizedInfo.Exists)
+            {
+                var cachedStream = new FileStream(resizedInfo.PhysicalPath, FileMode.Open, FileAccess.Read, FileShare.Read);
+                return new FileStreamResult(cachedStream, "image/jpeg");
+            }
 
             // Ensure directory exists
             Directory.CreateDirectory(Path.GetDirectoryName(resizedInfo.PhysicalPath)!);
@@ -190,31 +195,34 @@ namespace React.DAL.Implementation.File
         }
             });
 
-            var imageList = images.Data?
-                .OrderBy(x => x.SrNo)
-                .Select(x =>
+            if (images.TotalCount > 0)
+            {
+                var imageList = images.Data?
+               .OrderBy(x => x.SrNo)
+               .Select(x =>
+               {
+                   var folderPath = $"{StaticResource.Files}{StaticResource.FileUniqueSept}{moduleName}";
+                   var filePath = $"{folderPath}{StaticResource.FileUniqueSept}{moduleId}";
+                   var imageProp = StaticResource.ImageObject(filePath, x.ImageName, 50, 50);
+
+                   return new React.Domain.DTOs.Request.File.ImageInfo
+                   {
+                       SrNo = x.SrNo,
+                       ImageName = imageProp?.CustomImageURL ?? "" // ⬅️ Return 50x50 image URL
+                   };
+               })
+               .ToList() ?? new();
+                return new ImageInfoRequest
                 {
-                    var folderPath = $"{StaticResource.Files}{StaticResource.FileUniqueSept}{moduleName}";
-                    var filePath = $"{folderPath}{StaticResource.FileUniqueSept}{moduleId}";
-                    var imageProp = StaticResource.ImageObject(filePath, x.ImageName, 50, 50);
-
-                    return new React.Domain.DTOs.Request.File.ImageInfo
-                    {
-                        SrNo = x.SrNo,
-                        ImageName = imageProp?.CustomImageURL ?? "" // ⬅️ Return 50x50 image URL
-                    };
-                })
-                .ToList() ?? new();
-            if (imageList.Count > 0)
-            {
-
+                    AddImages = imageList, // All loaded in AddImages by default
+                    UpdateImages = new List<React.Domain.DTOs.Request.File.ImageInfo>(),
+                    DeleteImages = new List<React.Domain.DTOs.Request.File.ImageInfo>()
+                };
             }
-            return new ImageInfoRequest
+            else
             {
-                AddImages = imageList, // All loaded in AddImages by default
-                UpdateImages = new List<React.Domain.DTOs.Request.File.ImageInfo>(),
-                DeleteImages = new List<React.Domain.DTOs.Request.File.ImageInfo>()
-            };
+                return new ImageInfoRequest();
+            }
         }
 
         #endregion

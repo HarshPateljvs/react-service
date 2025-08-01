@@ -11,6 +11,7 @@ namespace React.Domain.Common
         // ✅ Success
         public const string SUCCESS = "200";
         public const string CREATED = "201";
+        public const string UPDATED = "202";
 
         // ⚠️ Client-side errors
         public const string BAD_REQUEST = "400";

@@ -14,7 +14,7 @@ namespace React.DAL.Implementation.Employee
     {
         private readonly IGenericRepository<React.Domain.Models.Employee.Employee> _employeeRepo;
         private readonly IFileService _fileRepo;
-        public EmployeeService(IGenericRepository<React.Domain.Models.Employee.Employee> employeeRepo,IFileService fileService)
+        public EmployeeService(IGenericRepository<React.Domain.Models.Employee.Employee> employeeRepo, IFileService fileService)
         {
             _employeeRepo = employeeRepo;
             _fileRepo = fileService;
@@ -37,7 +37,10 @@ namespace React.DAL.Implementation.Employee
 
         public async Task<APIBaseResponse<React.Domain.Models.Employee.Employee>> GetEmployeeByIdAsync(FilterDto? filter)
         {
-            return await _employeeRepo.GetByIdAsync(filter);
+
+            var response = await _employeeRepo.GetByIdAsync(filter);
+            response.Data.EmployeeImages = await _fileRepo.GetImagesByModuleAsync("Employee", "Employee", response.Data.Id);
+            return response;
         }
 
         public async Task<APIBaseResponse<React.Domain.Models.Employee.Employee>> AddEmployeeAsync(React.Domain.Models.Employee.Employee employee)
@@ -54,7 +57,14 @@ namespace React.DAL.Implementation.Employee
 
         public async Task<APIBaseResponse<React.Domain.Models.Employee.Employee>> UpdateEmployeeAsync(React.Domain.Models.Employee.Employee employee)
         {
-            return await _employeeRepo.UpdateAsync(employee);
+
+            var response = await _employeeRepo.UpdateAsync(employee);
+            if (response.ResponseCode == ResponseCodes.UPDATED)
+            {
+                await _fileRepo.ManageImagesAsync("Employee", "Employee", response.Data.Id, employee.EmployeeImages);
+                response.AddInfo("Employee created successfully.");
+            }
+            return response;
         }
 
         public async Task<APIBaseResponse<React.Domain.Models.Employee.Employee>> DeleteEmployeeAsync(FilterDto? filter)

@@ -81,7 +81,7 @@ namespace React.DAL.Implementation.Common
             return new APIBaseResponse<T>
             {
                 Data = entity,
-                ResponseCode = ResponseCodes.SUCCESS
+                ResponseCode = ResponseCodes.UPDATED
             };
         }
 

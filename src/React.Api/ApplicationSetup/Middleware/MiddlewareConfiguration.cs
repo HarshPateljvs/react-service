@@ -9,7 +9,8 @@ namespace ApplicationSetup.Middleware
     {
         public static void UseMiddlewarePipeline(this WebApplication app)
         {
-                app.UseStaticFiles();
+            app.UseCors("AllowFrontend");
+            app.UseStaticFiles();
             //app.UseStaticFiles(new StaticFileOptions
             //{
             //    FileProvider = app.Services.GetRequiredService<IFileProvider>()
@@ -19,7 +20,6 @@ namespace ApplicationSetup.Middleware
                 FileProvider = new PhysicalFileProvider(StaticResource.GetFolder(StaticResource.Logs)),
                 RequestPath = "/"+StaticResource.Logs
             });
-            app.UseCors("AllowFrontend");
             app.UseMiddleware<UnHandledExceptionMiddleware>();
             app.UseRouting();
             app.UseAuthentication();
